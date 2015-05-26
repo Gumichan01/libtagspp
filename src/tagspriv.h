@@ -6,6 +6,7 @@
 #define cistrcmp strcasecmp
 #define nil NULL
 typedef unsigned char uchar;
+typedef unsigned long long uvlong;
 #else
 #include <u.h>
 #include <libc.h>

@@ -23,6 +23,10 @@ struct Tagctx
 	void *aux;
 	char *buf;
 	int bufsz;
+
+	int channels;
+	int samplerate;
+	int duration; /* ms */
 };
 
 extern int tagsget(Tagctx *ctx);

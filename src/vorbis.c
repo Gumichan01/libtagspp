@@ -4,7 +4,7 @@
  */
 #include "tagspriv.h"
 
-#define leuint(d) ((d)[3]<<24 | (d)[2]<<16 | (d)[1]<<8 | (d)[0]<<0)
+#define leuint(d) (((uchar*)(d))[3]<<24 | ((uchar*)(d))[2]<<16 | ((uchar*)(d))[1]<<8 | ((uchar*)(d))[0]<<0)
 
 int
 cbvorbiscomment(Tagctx *ctx, char *k, char *v){
@@ -55,8 +55,15 @@ tagvorbis(Tagctx *ctx, int *num)
 			return -1;
 		for(sz = i = 0; i < nsegs; sz += d[i++]);
 
-		if(d[nsegs] == 3)
+		if(d[nsegs] == 1 && sz >= 16){ /* identification */
+			if(ctx->read(ctx, d, 16) != 16)
+				return -1;
+			sz -= 16;
+			ctx->channels = d[10];
+			ctx->samplerate = leuint(&d[11]);
+		}else if(d[nsegs] == 3){ /* comment */
 			break;
+		}
 		ctx->seek(ctx, sz-1, 1);
 	}
 
@@ -86,6 +93,26 @@ tagvorbis(Tagctx *ctx, int *num)
 			return -1;
 		*v++ = 0;
 		*num += cbvorbiscomment(ctx, ctx->buf, v);
+	}
+
+	/* calculate the duration */
+	sz = ctx->bufsz <= 4096 ? ctx->bufsz : 4096;
+	for(i = sz; i < 65536+16; i += sz - 16){
+		if(ctx->seek(ctx, -i, 2) <= 0)
+			break;
+		v = ctx->buf;
+		if(ctx->read(ctx, v, sz) != sz)
+			break;
+		for(; v != NULL && v < ctx->buf+sz;){
+			v = memchr(v, 'O', ctx->buf+sz - v - 14);
+			if(v != NULL && v[1] == 'g' && v[2] == 'g' && v[3] == 'S' && (v[5] & 4) == 4){ /* last page */
+				uvlong g = leuint(v+6) | (uvlong)leuint(v+10)<<32;
+				ctx->duration = g * 1000 / ctx->samplerate;
+				return 0;
+			}
+			if(v != NULL)
+				v++;
+		}
 	}
 
 	return 0;

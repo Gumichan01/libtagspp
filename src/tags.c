@@ -31,6 +31,9 @@ tagsget(Tagctx *ctx)
 	len = 0;
 	if(ctx->filename != nil && (len = strlen(ctx->filename)) < 5)
 		return -1;
+	ctx->channels = 0;
+	ctx->samplerate = 0;
+	ctx->duration = 0;
 	for(i = 0; i < (int)(sizeof(g)/sizeof(g[0])); i++){
 		if(ctx->filename == nil || memcmp(&ctx->filename[len-g[i].extlen], g[i].ext, g[i].extlen) == 0){
 			num = 0;

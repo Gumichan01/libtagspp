@@ -1,3 +1,4 @@
+/* https://xiph.org/flac/format.html */
 #include "tagspriv.h"
 
 #define beu3(d)   ((d)[0]<<16 | (d)[1]<<8  | (d)[2]<<0)
@@ -6,15 +7,23 @@
 int
 tagflac(Tagctx *ctx, int *num)
 {
-	uchar d[8];
+	uchar *d;
 	int sz, last;
+	uvlong g;
 
-	if(ctx->read(ctx, d, sizeof(d)) != sizeof(d) || memcmp(d, "fLaC\x00", 5) != 0)
+	d = (uchar*)ctx->buf;
+	/* 8 bytes for marker, block type, length. 18 bytes for the stream info */
+	if(ctx->read(ctx, d, 8+18) != 8+18 || memcmp(d, "fLaC\x00", 5) != 0)
 		return -1;
 
-	/* skip streaminfo */
-	sz = beu3(&d[5]);
-	if(ctx->seek(ctx, sz, 1) != sz+8)
+	sz = beu3(&d[5]); /* size of the stream info */
+	ctx->samplerate = beu3(&d[18]) >> 4;
+	ctx->channels = ((d[20]>>1) & 7) + 1;
+	g = (uvlong)(d[21] & 0xf)<<32 | beu3(&d[22])<<8 | d[25];
+	ctx->duration = g * 1000 / ctx->samplerate;
+
+	/* skip the rest of the stream info */
+	if(ctx->seek(ctx, sz-18, 1) != 8+sz)
 		return -1;
 
 	for(last = 0; !last;){
@@ -57,14 +66,13 @@ tagflac(Tagctx *ctx, int *num)
 					continue;
 				}
 
-				if(ctx->read(ctx, ctx->buf, tagsz) != tagsz)
-					return -1;
-
 				k = ctx->buf;
-				k[tagsz] = 0;
+				if(ctx->read(ctx, k, tagsz) != tagsz)
+					return -1;
 				/* some tags have a stupid '\r'; ignore */
 				if(k[tagsz-1] == '\r')
 					k[tagsz-1] = 0;
+				k[tagsz] = 0;
 
 				if((v = strchr(k, '=')) != nil){
 					*v++ = 0;

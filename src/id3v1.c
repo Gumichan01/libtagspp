@@ -25,17 +25,24 @@ tagid3v1(Tagctx *ctx, int *num)
 	if(ctx->read(ctx, in, Insz) != Insz || memcmp(in, "TAG", 3) != 0)
 		return -1;
 
-	iso88591toutf8(out, Outsz, &in[3], 30);
-	ctx->tag(ctx, Ttitle, (char*)out, 0, 0);
-
-	iso88591toutf8(out, Outsz, &in[33], 30);
-	ctx->tag(ctx, Tartist, (char*)out, 0, 0);
-
-	iso88591toutf8(out, Outsz, &in[63], 30);
-	ctx->tag(ctx, Talbum, (char*)out, 0, 0);
+	if(iso88591toutf8(out, Outsz, &in[3], 30) > 0){
+		ctx->tag(ctx, Ttitle, (char*)out, 0, 0);
+		*num += 1;
+	}
+	if(iso88591toutf8(out, Outsz, &in[33], 30) > 0){
+		ctx->tag(ctx, Tartist, (char*)out, 0, 0);
+		*num += 1;
+	}
+	if(iso88591toutf8(out, Outsz, &in[63], 30) > 0){
+		ctx->tag(ctx, Talbum, (char*)out, 0, 0);
+		*num += 1;
+	}
 
 	in[93+4] = 0;
-	ctx->tag(ctx, Tdate, (char*)&in[93], 0, 0);
+	if(in[93] != 0){
+		ctx->tag(ctx, Tdate, (char*)&in[93], 0, 0);
+		*num += 1;
+	}
 
 	if(in[125] == 0 && in[126] > 0){
 		snprint((char*)out, Outsz, "%d", in[126]);
@@ -47,8 +54,6 @@ tagid3v1(Tagctx *ctx, int *num)
 		ctx->tag(ctx, Tgenre, id3genres[in[127]], 0, 0);
 		*num += 1;
 	}
-
-	*num += 4;
 
 	return 0;
 }

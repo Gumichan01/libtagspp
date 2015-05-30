@@ -8,6 +8,8 @@
 
 int
 cbvorbiscomment(Tagctx *ctx, char *k, char *v){
+	if(*v == 0)
+		return 0;
 	if(cistrcmp(k, "album") == 0)
 		ctx->tag(ctx, Talbum, v, 0, 0);
 	else if(cistrcmp(k, "title") == 0)
@@ -55,14 +57,14 @@ tagvorbis(Tagctx *ctx, int *num)
 			return -1;
 		for(sz = i = 0; i < nsegs; sz += d[i++]);
 
+		if(d[nsegs] == 3) /* comment */
+			break;
 		if(d[nsegs] == 1 && sz >= 16){ /* identification */
 			if(ctx->read(ctx, d, 16) != 16)
 				return -1;
 			sz -= 16;
 			ctx->channels = d[10];
 			ctx->samplerate = leuint(&d[11]);
-		}else if(d[nsegs] == 3){ /* comment */
-			break;
 		}
 		ctx->seek(ctx, sz-1, 1);
 	}

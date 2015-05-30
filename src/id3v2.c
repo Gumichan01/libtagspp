@@ -240,7 +240,8 @@ tagid3v2(Tagctx *ctx, int *num)
 					*num += v2cb(ctx, (char*)d, ctx->buf);
 				break;
 			case 3: /* utf-8 */
-				*num += v2cb(ctx, (char*)d, b);
+				if(*b)
+					*num += v2cb(ctx, (char*)d, b);
 				break;
 			}
 		}

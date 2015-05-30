@@ -1,3 +1,7 @@
+#ifndef __unix__
+#pragma lib "libtags.a"
+#endif
+
 typedef struct Tagctx Tagctx;
 
 enum

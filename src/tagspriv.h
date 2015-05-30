@@ -1,7 +1,9 @@
 #ifdef __unix__
+#define _DEFAULT_SOURCE
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <strings.h>
 #define snprint snprintf
 #define cistrcmp strcasecmp
 #define nil NULL

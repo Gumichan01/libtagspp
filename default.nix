@@ -1,15 +1,20 @@
-{ stdenv, mk, pkgconfig }:
+{ stdenv, mk, pkgconfig, fetchgitLocal }:
 
 stdenv.mkDerivation rec {
   name = "libtags";
-  src = ./src;
+  src = fetchgitLocal ./.;
 
   buildInputs = [ mk ];
   propagatedBuildInputs = [ pkgconfig ];
   enableParallelBuilding = true;
 
-  buildPhase = "mk -f mkfile.nix";
-  installPhase = "mk -f mkfile.nix install";
+  buildPhase = ''
+    cd src && mk -f mkfile.nix && cd ..
+  '';
+  installPhase = ''
+    cd src && mk -f mkfile.nix install && cd ..
+    cd examples && mk -f mkfile.nix install INCLUDES=-I$out/include LIBS="-L$out/lib -ltags"
+  '';
 
   meta = {
     description = "A library to read tags";

@@ -8,9 +8,6 @@ stdenv.mkDerivation rec {
   propagatedBuildInputs = [ pkgconfig ];
   enableParallelBuilding = true;
 
-  buildPhase = ''
-    cd src && mk -f mkfile.nix && cd ..
-  '';
   installPhase = ''
     cd src && mk -f mkfile.nix install && cd ..
     cd examples && mk -f mkfile.nix install INCLUDES=-I$out/include LIBS="-L$out/lib -ltags"

@@ -185,6 +185,11 @@ tagid3v2(Tagctx *ctx, int *num)
 				sz -= tsz;
 				continue;
 			}
+			if(ver == 4 && (d[9] & 1<<0) != 0){ /* skip data length indicator */
+				ctx->seek(ctx, 4, 1);
+				sz -= 4;
+				tsz -= 4;
+			}
 		}
 		else{
 			tsz = synchsafe(&d[3]) >> 7;

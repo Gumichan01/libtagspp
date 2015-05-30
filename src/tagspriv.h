@@ -38,8 +38,8 @@ int iso88591toutf8(uchar *out, int osz, const uchar *src, int sz);
 int utf16to8(uchar *out, int osz, const uchar *src, int sz);
 
 /*
- * This one is common for both tagvorbis.c and tagflac.c
- * It maps a string k to Tagtype and executes cb.
- * Returns 1 if cb was called, 0 otherwise.
+ * This one is common for both vorbis.c and flac.c
+ * It maps a string k to tag type and executes the callback from ctx.
+ * Returns 1 if callback was called, 0 otherwise.
  */
 int cbvorbiscomment(Tagctx *ctx, char *k, char *v);

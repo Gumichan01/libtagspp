@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
   '';
 
   meta = {
-    description = "A library to read tags";
+    description = "A cross-platform library for reading tags, designed for highly constrained environments";
     maintainers = with stdenv.lib.maintainers; [ ftrvxmtrx ];
     platforms = stdenv.lib.platforms.unix;
     license = stdenv.lib.licenses.mit;

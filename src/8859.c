@@ -6,7 +6,7 @@ iso88591toutf8(uchar *o, int osz, const uchar *s, int sz)
 {
 	int i;
 
-	for(i = 0; i < sz && osz > 1; i++){
+	for(i = 0; i < sz && osz > 1 && s[i] != 0; i++){
 		if(s[i] >= 0xa0 && osz < 3)
 			break;
 

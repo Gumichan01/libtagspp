@@ -15,19 +15,19 @@ static int
 v2cb(Tagctx *ctx, char *k, char *v)
 {
 	if(memcmp(k, "TAL", 3) == 0 && (k[3] == 0 || k[3] == 'B'))
-		ctx->tag(ctx, Talbum, v, 0, 0);
+		tagscallcb(ctx, Talbum, v, 0, 0);
 	else if(memcmp(k, "TPE", 3) == 0 && (k[3] == '1' || k[3] == '2'))
-		ctx->tag(ctx, Tartist, v, 0, 0);
+		tagscallcb(ctx, Tartist, v, 0, 0);
 	else if(memcmp(k, "TP", 2) == 0 && (k[2] == '1' || k[2] == '2'))
-		ctx->tag(ctx, Tartist, v, 0, 0);
+		tagscallcb(ctx, Tartist, v, 0, 0);
 	else if(strcmp(k, "TIT2") == 0 || strcmp(k, "TT2") == 0)
-		ctx->tag(ctx, Ttitle, v, 0, 0);
+		tagscallcb(ctx, Ttitle, v, 0, 0);
 	else if(memcmp(k, "TYE", 3) == 0 && (k[3] == 0 || k[3] == 'R'))
-		ctx->tag(ctx, Tdate, v, 0, 0);
+		tagscallcb(ctx, Tdate, v, 0, 0);
 	else if(strcmp(k, "TDRC") == 0)
-		ctx->tag(ctx, Tdate, v, 0, 0);
+		tagscallcb(ctx, Tdate, v, 0, 0);
 	else if(strcmp(k, "TRK") == 0 || strcmp(k, "TRCK") == 0)
-		ctx->tag(ctx, Ttrack, v, 0, 0);
+		tagscallcb(ctx, Ttrack, v, 0, 0);
 	else if(strcmp(k, "TXXX") == 0 && strncmp(v, "REPLAYGAIN_", 11) == 0){
 		int type = -1;
 		v += 11;
@@ -45,7 +45,7 @@ v2cb(Tagctx *ctx, char *k, char *v)
 				type = Talbumpeak;
 		}
 		if(type >= 0)
-			ctx->tag(ctx, type, v+5, 0, 0);
+			tagscallcb(ctx, type, v+5, 0, 0);
 		else
 			return 0;
 	}else if(memcmp(k, "TCO", 3) == 0 && (k[3] == 0 || k[3] == 'N')){
@@ -53,11 +53,11 @@ v2cb(Tagctx *ctx, char *k, char *v)
 			if(v[0] == '(' && v[1] <= '9' && v[1] >= '0'){
 				int i = atoi(&v[1]);
 				if(i < Numgenre)
-					ctx->tag(ctx, Tgenre, id3genres[i], 0, 0);
+					tagscallcb(ctx, Tgenre, id3genres[i], 0, 0);
 				for(v++; v[0] && v[0] != ')'; v++);
 				v--;
 			}else if(v[0] != '(' && v[0] != ')'){
-				ctx->tag(ctx, Tgenre, v, 0, 0);
+				tagscallcb(ctx, Tgenre, v, 0, 0);
 				break;
 			}
 		}
@@ -98,11 +98,11 @@ rva2(Tagctx *ctx, char *tag, int sz)
 			peaks[sizeof(peaks)-1] = 0;
 
 			if(strcmp((char*)tag, "track")){
-				ctx->tag(ctx, Ttrackgain, vas, 0, 0);
-				ctx->tag(ctx, Ttrackpeak, peaks, 0, 0);
+				tagscallcb(ctx, Ttrackgain, vas, 0, 0);
+				tagscallcb(ctx, Ttrackpeak, peaks, 0, 0);
 			}else if(strcmp((char*)tag, "album")){
-				ctx->tag(ctx, Talbumgain, vas, 0, 0);
-				ctx->tag(ctx, Talbumpeak, peaks, 0, 0);
+				tagscallcb(ctx, Talbumgain, vas, 0, 0);
+				tagscallcb(ctx, Talbumpeak, peaks, 0, 0);
 			}
 			break;
 		}

@@ -27,6 +27,7 @@ struct Tagctx
 	void *aux;
 	char *buf;
 	int bufsz;
+	int found;
 
 	int channels;
 	int samplerate;

@@ -43,3 +43,5 @@ int utf16to8(uchar *out, int osz, const uchar *src, int sz);
  * Returns 1 if callback was called, 0 otherwise.
  */
 int cbvorbiscomment(Tagctx *ctx, char *k, char *v);
+
+void tagscallcb(Tagctx *ctx, int type, const char *s, int offset, int size);

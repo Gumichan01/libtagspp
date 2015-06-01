@@ -22,10 +22,17 @@ static const Getter g[] =
 	{tagflac, 5, ".flac"},
 };
 
+void
+tagscallcb(Tagctx *ctx, int type, const char *s, int offset, int size)
+{
+	ctx->found |= 1<<type;
+	ctx->tag(ctx, type, s, offset, size);
+}
+
 int
 tagsget(Tagctx *ctx)
 {
-	int i, len, num;
+	int i, len, num, res;
 
 	/* enough for having an extension */
 	len = 0;
@@ -34,14 +41,16 @@ tagsget(Tagctx *ctx)
 	ctx->channels = 0;
 	ctx->samplerate = 0;
 	ctx->duration = 0;
+	ctx->found = 0;
+	res = -1;
 	for(i = 0; i < (int)(sizeof(g)/sizeof(g[0])); i++){
 		if(ctx->filename == nil || memcmp(&ctx->filename[len-g[i].extlen], g[i].ext, g[i].extlen) == 0){
 			num = 0;
 			if(g[i].f(ctx, &num) == 0 && num > 0)
-				return 0;
+				res = 0;
 			ctx->seek(ctx, 0, 0);
 		}
 	}
 
-	return -1;
+	return res;
 }

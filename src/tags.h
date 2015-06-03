@@ -18,6 +18,13 @@ enum
 	Tgenre,
 };
 
+enum
+{
+	Fmp3,
+	Fogg,
+	Fflac,
+};
+
 struct Tagctx
 {
 	const char *filename;
@@ -32,6 +39,7 @@ struct Tagctx
 	int channels;
 	int samplerate;
 	int duration; /* ms */
+	int format;
 };
 
 extern int tagsget(Tagctx *ctx);

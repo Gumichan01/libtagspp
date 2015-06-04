@@ -2,6 +2,7 @@
 #include "tagspriv.h"
 
 #define beu3(d)   ((d)[0]<<16 | (d)[1]<<8  | (d)[2]<<0)
+#define beuint(d) ((d)[0]<<24 | (d)[1]<<16 | (d)[2]<<8 | (d)[3]<<0)
 #define leuint(d) ((d)[3]<<24 | (d)[2]<<16 | (d)[1]<<8 | (d)[0]<<0)
 
 int
@@ -34,7 +35,25 @@ tagflac(Tagctx *ctx, int *num)
 		if((d[0] & 0x80) != 0)
 			last = 1;
 
-		if((d[0] & 0x7f) == 4){ /* 4 = vorbis comment */
+		if((d[0] & 0x7f) == 6){ /* 6 = picture */
+			int n, offset;
+			char *mime;
+
+			if(sz < 16 || ctx->read(ctx, d, 8) != 8) /* type, mime length */
+				return -1;
+			sz -= 8;
+			n = beuint(&d[4]);
+			mime = ctx->buf+20;
+			if(n >= sz || n >= ctx->bufsz-1 || ctx->read(ctx, mime, n) != n)
+				return -1;
+			mime[n] = 0;
+			ctx->read(ctx, d, 4); /* description */
+			offset = beuint(d) + ctx->seek(ctx, 0, 1) + 20;
+			ctx->read(ctx, d, 20);
+			n = beuint(&d[16]);
+			tagscallcb(ctx, Timage, mime, offset, n);
+			*num += 1;
+		}else if((d[0] & 0x7f) == 4){ /* 4 = vorbis comment */
 			int i, numtags, tagsz, vensz;
 			char *k, *v;
 

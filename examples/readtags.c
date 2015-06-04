@@ -34,13 +34,17 @@ static const char *t2s[] =
 	[Ttrackgain] = "trackgain",
 	[Ttrackpeak] = "trackpeak",
 	[Tgenre] = "genre",
+	[Timage] = "image",
 };
 
 static void
 cb(Tagctx *ctx, int t, const char *v, int offset, int size)
 {
 	USED(ctx); USED(offset); USED(size);
-	print("%-12s %s\n", t2s[t], v);
+	if(t == Timage)
+		print("%-12s %s %d %d\n", t2s[t], v, offset, size);
+	else
+		print("%-12s %s\n", t2s[t], v);
 }
 
 static int

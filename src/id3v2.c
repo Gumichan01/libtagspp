@@ -131,7 +131,7 @@ tagid3v2(Tagctx *ctx, int *num)
 {
 	char *tag;
 	int sz, exsz, framesz;
-	int ver, unsync;
+	int ver, unsync, offset;
 	uchar d[10];
 
 	if(ctx->read(ctx, d, sizeof(d)) != sizeof(d))
@@ -202,7 +202,23 @@ tagid3v2(Tagctx *ctx, int *num)
 
 		if(d[0] != 'T'){ /* skip non-text tags */
 			if(memcmp(d, "APIC", 4) == 0){ /* need to skip APIC-specific header */
-				/* FIXME cover images */
+				offset = ctx->seek(ctx, 0, 1);
+				if(ctx->read(ctx, tag, 256) == 256){ /* APIC mime and description should fit */
+					b = &tag[1]; /* mime type */
+					for(exsz = 1 + strlen(b) + 2; exsz < 253; exsz++){
+						if(tag[0] == 0 || tag[0] == 3){ /* one zero byte */
+							if(tag[exsz] == 0){
+								exsz++;
+								break;
+							}
+						}else if(tag[exsz] == 0 && tag[exsz+1] == 0 && tag[exsz+2] == 0){
+							exsz += 3;
+							break;
+						}
+					}
+					tagscallcb(ctx, Timage, b, offset+exsz, tsz-exsz);
+					tsz -= 256;
+				}
 			}else if(memcmp(d, "RVA2", 4) == 0 && tsz >= 6+5){
 				/* replay gain. 6 = "track\0", 5 = other */
 				if(ctx->bufsz >= tsz){

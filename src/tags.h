@@ -16,6 +16,7 @@ enum
 	Ttrackgain,
 	Ttrackpeak,
 	Tgenre,
+	Timage,
 };
 
 enum

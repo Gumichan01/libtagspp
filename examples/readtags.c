@@ -61,7 +61,7 @@ ctxseek(Tagctx *ctx, int offset, int whence)
 	return seek(aux->fd, offset, whence);
 }
 
-void
+int
 main(int argc, char **argv)
 {
 	int i;
@@ -79,7 +79,7 @@ main(int argc, char **argv)
 
 	if(argc < 2){
 		print("usage: readtags FILE...\n");
-		return;
+		return -1;
 	}
 
 	for(i = 1; i < argc; i++){
@@ -102,4 +102,5 @@ main(int argc, char **argv)
 		}
 		print("\n");
 	}
+	return 0;
 }

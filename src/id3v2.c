@@ -17,9 +17,9 @@
 static int
 v2cb(Tagctx *ctx, char *k, char *v)
 {
-	if(memcmp(k, "TAL", 3) == 0 && (k[3] == 0 || k[3] == 'B'))
+	if(memcmp(k, "TAL\x00", 4) == 0 || memcmp(k, "TALB", 5) == 0)
 		tagscallcb(ctx, Talbum, v, 0, 0);
-	else if(memcmp(k, "TPE", 3) == 0 && (k[3] == '1' || k[3] == '2'))
+	else if(memcmp(k, "TPE1", 5) == 0 || memcmp(k, "TPE2", 5) == 0)
 		tagscallcb(ctx, Tartist, v, 0, 0);
 	else if(memcmp(k, "TP", 2) == 0 && (k[2] == '1' || k[2] == '2'))
 		tagscallcb(ctx, Tartist, v, 0, 0);
@@ -31,7 +31,20 @@ v2cb(Tagctx *ctx, char *k, char *v)
 		tagscallcb(ctx, Tdate, v, 0, 0);
 	else if(strcmp(k, "TRK") == 0 || strcmp(k, "TRCK") == 0)
 		tagscallcb(ctx, Ttrack, v, 0, 0);
-	else if(strcmp(k, "TXXX") == 0 && strncmp(v, "REPLAYGAIN_", 11) == 0){
+	else if(memcmp(k, "TCO", 3) == 0 && (k[3] == 0 || k[3] == 'N')){
+		for(; v[0]; v++){
+			if(v[0] == '(' && v[1] <= '9' && v[1] >= '0'){
+				int i = atoi(&v[1]);
+				if(i < Numgenre)
+					tagscallcb(ctx, Tgenre, id3genres[i], 0, 0);
+				for(v++; v[0] && v[0] != ')'; v++);
+				v--;
+			}else if(v[0] != '(' && v[0] != ')'){
+				tagscallcb(ctx, Tgenre, v, 0, 0);
+				break;
+			}
+		}
+	}else if(strcmp(k, "TXXX") == 0 && strncmp(v, "REPLAYGAIN_", 11) == 0){
 		int type = -1;
 		v += 11;
 		if(strncmp(v, "TRACK_", 6) == 0){
@@ -51,19 +64,6 @@ v2cb(Tagctx *ctx, char *k, char *v)
 			tagscallcb(ctx, type, v+5, 0, 0);
 		else
 			return 0;
-	}else if(memcmp(k, "TCO", 3) == 0 && (k[3] == 0 || k[3] == 'N')){
-		for(; v[0]; v++){
-			if(v[0] == '(' && v[1] <= '9' && v[1] >= '0'){
-				int i = atoi(&v[1]);
-				if(i < Numgenre)
-					tagscallcb(ctx, Tgenre, id3genres[i], 0, 0);
-				for(v++; v[0] && v[0] != ')'; v++);
-				v--;
-			}else if(v[0] != '(' && v[0] != ')'){
-				tagscallcb(ctx, Tgenre, v, 0, 0);
-				break;
-			}
-		}
 	}else
 		return 0;
 	return 1;
@@ -392,9 +392,9 @@ header:
 	}
 
 	offset = ctx->seek(ctx, sz, 1);
-	sz = ctx->bufsz <= 4096 ? ctx->bufsz : 4096;
+	sz = ctx->bufsz <= 2048 ? ctx->bufsz : 2048;
 	b = nil;
-	for(exsz = 0; exsz < 8096; exsz += sz){
+	for(exsz = 0; exsz < 2048; exsz += sz){
 		if(ctx->read(ctx, ctx->buf, sz) != sz)
 			break;
 		for(b = (uchar*)ctx->buf; (b = memchr(b, 'I', sz - 1 - ((char*)b - ctx->buf))) != nil; b++){

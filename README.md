@@ -22,4 +22,19 @@ Comparison to id3lib and taglib:
 │ tag writing    │ no, not a goal  │ yes              │ yes              │
 │ Plan 9 support │ yes, native     │ no               │ no               │
 ╰────────────────┴─────────────────┴──────────────────┴──────────────────╯
+
+CPU time (784 files: mp3, ogg, flac):
+
+╭────────────────┬──────────────────┬──────────────────╮
+│                │ libtags          │ taglib           │
+├────────────────┼──────────────────┼──────────────────┤
+│ files cached   │ real    0m0.027s │ real    0m0.155s │
+│                │ user    0m0.014s │ user    0m0.102s │
+│                │ sys     0m0.012s │ sys     0m0.053s │
+│                │                  │                  │
+│ cache dropped  │ real    0m1.158s │ real    0m1.628s │
+│                │ user    0m0.024s │ user    0m0.211s │
+│                │ sys     0m0.132s │ sys     0m0.187s │
+╰────────────────┴──────────────────┴──────────────────╯
+
 ```

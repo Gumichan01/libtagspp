@@ -4,16 +4,16 @@ typedef struct Getter Getter;
 
 struct Getter
 {
-	int (*f)(Tagctx *ctx, int *num);
+	int (*f)(Tagctx *ctx);
 	const char *ext;
 	int extlen;
 	int format;
 };
 
-extern int tagvorbis(Tagctx *ctx, int *num);
-extern int tagflac(Tagctx *ctx, int *num);
-extern int tagid3v2(Tagctx *ctx, int *num);
-extern int tagid3v1(Tagctx *ctx, int *num);
+extern int tagvorbis(Tagctx *ctx);
+extern int tagflac(Tagctx *ctx);
+extern int tagid3v2(Tagctx *ctx);
+extern int tagid3v1(Tagctx *ctx);
 
 static const Getter g[] =
 {
@@ -28,12 +28,13 @@ tagscallcb(Tagctx *ctx, int type, const char *s, int offset, int size)
 {
 	ctx->found |= 1<<type;
 	ctx->tag(ctx, type, s, offset, size);
+	ctx->num++;
 }
 
 int
 tagsget(Tagctx *ctx)
 {
-	int i, len, num, res;
+	int i, len, res;
 
 	/* enough for having an extension */
 	len = 0;
@@ -47,8 +48,8 @@ tagsget(Tagctx *ctx)
 	res = -1;
 	for(i = 0; i < (int)(sizeof(g)/sizeof(g[0])); i++){
 		if(ctx->filename == nil || memcmp(&ctx->filename[len-g[i].extlen], g[i].ext, g[i].extlen) == 0){
-			num = 0;
-			if(g[i].f(ctx, &num) == 0 && num > 0){
+			ctx->num = 0;
+			if(g[i].f(ctx) == 0 && ctx->num > 0){
 				res = 0;
 				ctx->format = g[i].format;
 			}

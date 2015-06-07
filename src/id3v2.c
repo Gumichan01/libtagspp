@@ -132,11 +132,11 @@ resync(uchar *b, int sz)
 static int
 nontext(Tagctx *ctx, uchar *d, int tsz, int unsync)
 {
-	int n, offset, num;
+	int n, offset;
 	char *b, *tag;
 
 	tag = ctx->buf;
-	n = num = 0;
+	n = 0;
 	if(memcmp(d, "APIC", 4) == 0){
 		offset = ctx->seek(ctx, 0, 1);
 		if((n = ctx->read(ctx, tag, 256)) == 256){ /* APIC mime and description should fit */
@@ -153,28 +153,22 @@ nontext(Tagctx *ctx, uchar *d, int tsz, int unsync)
 				}
 			}
 			tagscallcb(ctx, Timage, b, offset+n, tsz-n);
-			num = 1;
 			n = 256;
 		}
 	}else if(memcmp(d, "RVA2", 4) == 0 && tsz >= 6+5){
 		/* replay gain. 6 = "track\0", 5 = other */
 		if(ctx->bufsz >= tsz && (n = ctx->read(ctx, tag, tsz)) == tsz)
-			if(rva2(ctx, tag, unsync ? resync((uchar*)tag, n) : n) == 0)
-				num = 1;
+			rva2(ctx, tag, unsync ? resync((uchar*)tag, n) : n);
 	}
 
-	ctx->seek(ctx, tsz-n, 1);
-
-	return num;
+	return ctx->seek(ctx, tsz-n, 1) < 0 ? -1 : 0;
 }
 
 static int
 text(Tagctx *ctx, uchar *d, int tsz, int unsync)
 {
-	int num;
 	char *b, *tag;
 
-	num = 0;
 	if(ctx->bufsz >= tsz+1){
 		/* place the data at the end to make best effort at charset conversion */
 		tag = &ctx->buf[ctx->bufsz - tsz - 1];
@@ -194,20 +188,20 @@ text(Tagctx *ctx, uchar *d, int tsz, int unsync)
 	switch(tag[0]){
 	case 0: /* iso-8859-1 */
 		if(iso88591toutf8((uchar*)ctx->buf, ctx->bufsz, (uchar*)b, tsz) > 0)
-			num = v2cb(ctx, (char*)d, ctx->buf);
+			v2cb(ctx, (char*)d, ctx->buf);
 		break;
 	case 1: /* utf-16 */
 	case 2:
 		if(utf16to8((uchar*)ctx->buf, ctx->bufsz, (uchar*)b, tsz) > 0)
-			num = v2cb(ctx, (char*)d, ctx->buf);
+			v2cb(ctx, (char*)d, ctx->buf);
 		break;
 	case 3: /* utf-8 */
 		if(*b)
-			num = v2cb(ctx, (char*)d, b);
+			v2cb(ctx, (char*)d, b);
 		break;
 	}
 
-	return num;
+	return 0;
 }
 
 static int
@@ -313,7 +307,7 @@ getduration(Tagctx *ctx, int offset)
 }
 
 int
-tagid3v2(Tagctx *ctx, int *num)
+tagid3v2(Tagctx *ctx)
 {
 	int sz, exsz, framesz;
 	int ver, unsync, offset;
@@ -378,8 +372,7 @@ header:
 				sz -= 4;
 				tsz -= 4;
 			}
-		}
-		else{
+		}else{
 			tsz = synchsafe(&d[3]) >> 7;
 			if(tsz > sz)
 				return -1;
@@ -388,7 +381,10 @@ header:
 		}
 		sz -= tsz;
 
-		*num += (d[0] == 'T' ? text : nontext)(ctx, d, tsz, unsync || frameunsync);
+		if(d[0] == 'T' && text(ctx, d, tsz, unsync || frameunsync) != 0)
+			return -1;
+		else if(d[0] != 'T' && nontext(ctx, d, tsz, unsync || frameunsync) != 0)
+			return -1;
 	}
 
 	offset = ctx->seek(ctx, sz, 1);

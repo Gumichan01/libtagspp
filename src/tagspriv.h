@@ -42,6 +42,6 @@ int utf16to8(uchar *out, int osz, const uchar *src, int sz);
  * It maps a string k to tag type and executes the callback from ctx.
  * Returns 1 if callback was called, 0 otherwise.
  */
-int cbvorbiscomment(Tagctx *ctx, char *k, char *v);
+void cbvorbiscomment(Tagctx *ctx, char *k, char *v);
 
 void tagscallcb(Tagctx *ctx, int type, const char *s, int offset, int size);

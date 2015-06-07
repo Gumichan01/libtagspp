@@ -6,7 +6,7 @@
 #define leuint(d) ((d)[3]<<24 | (d)[2]<<16 | (d)[1]<<8 | (d)[0]<<0)
 
 int
-tagflac(Tagctx *ctx, int *num)
+tagflac(Tagctx *ctx)
 {
 	uchar *d;
 	int sz, last;
@@ -52,7 +52,6 @@ tagflac(Tagctx *ctx, int *num)
 			ctx->read(ctx, d, 20);
 			n = beuint(&d[16]);
 			tagscallcb(ctx, Timage, mime, offset, n);
-			*num += 1;
 		}else if((d[0] & 0x7f) == 4){ /* 4 = vorbis comment */
 			int i, numtags, tagsz, vensz;
 			char *k, *v;
@@ -95,7 +94,7 @@ tagflac(Tagctx *ctx, int *num)
 
 				if((v = strchr(k, '=')) != nil){
 					*v++ = 0;
-					*num += cbvorbiscomment(ctx, k, v);
+					cbvorbiscomment(ctx, k, v);
 				}
 			}
 		}else if(ctx->seek(ctx, sz, 1) <= 0)

@@ -11,7 +11,7 @@ enum
 };
 
 int
-tagid3v1(Tagctx *ctx, int *num)
+tagid3v1(Tagctx *ctx)
 {
 	uchar *in, *out;
 
@@ -25,35 +25,24 @@ tagid3v1(Tagctx *ctx, int *num)
 	if(ctx->read(ctx, in, Insz) != Insz || memcmp(in, "TAG", 3) != 0)
 		return -1;
 
-	if((ctx->found & 1<<Ttitle) == 0 && iso88591toutf8(out, Outsz, &in[3], 30) > 0){
+	if((ctx->found & 1<<Ttitle) == 0 && iso88591toutf8(out, Outsz, &in[3], 30) > 0)
 		tagscallcb(ctx, Ttitle, (char*)out, 0, 0);
-		*num += 1;
-	}
-	if((ctx->found & 1<<Tartist) == 0 && iso88591toutf8(out, Outsz, &in[33], 30) > 0){
+	if((ctx->found & 1<<Tartist) == 0 && iso88591toutf8(out, Outsz, &in[33], 30) > 0)
 		tagscallcb(ctx, Tartist, (char*)out, 0, 0);
-		*num += 1;
-	}
-	if((ctx->found & 1<<Talbum) == 0 && iso88591toutf8(out, Outsz, &in[63], 30) > 0){
+	if((ctx->found & 1<<Talbum) == 0 && iso88591toutf8(out, Outsz, &in[63], 30) > 0)
 		tagscallcb(ctx, Talbum, (char*)out, 0, 0);
-		*num += 1;
-	}
 
 	in[93+4] = 0;
-	if((ctx->found & 1<<Tdate) == 0 && in[93] != 0){
+	if((ctx->found & 1<<Tdate) == 0 && in[93] != 0)
 		tagscallcb(ctx, Tdate, (char*)&in[93], 0, 0);
-		*num += 1;
-	}
 
 	if((ctx->found & 1<<Ttrack) == 0 && in[125] == 0 && in[126] > 0){
 		snprint((char*)out, Outsz, "%d", in[126]);
 		tagscallcb(ctx, Ttrack, (char*)out, 0, 0);
-		*num += 1;
 	}
 
-	if((ctx->found & 1<<Tgenre) == 0 && in[127] < Numgenre){
+	if((ctx->found & 1<<Tgenre) == 0 && in[127] < Numgenre)
 		tagscallcb(ctx, Tgenre, id3genres[in[127]], 0, 0);
-		*num += 1;
-	}
 
 	return 0;
 }

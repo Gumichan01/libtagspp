@@ -6,10 +6,10 @@
 
 #define leuint(d) (((uchar*)(d))[3]<<24 | ((uchar*)(d))[2]<<16 | ((uchar*)(d))[1]<<8 | ((uchar*)(d))[0]<<0)
 
-int
+void
 cbvorbiscomment(Tagctx *ctx, char *k, char *v){
 	if(*v == 0)
-		return 0;
+		return;
 	if(cistrcmp(k, "album") == 0)
 		tagscallcb(ctx, Talbum, v, 0, 0);
 	else if(cistrcmp(k, "title") == 0)
@@ -30,13 +30,10 @@ cbvorbiscomment(Tagctx *ctx, char *k, char *v){
 		tagscallcb(ctx, Talbumgain, v, 0, 0);
 	else if(cistrcmp(k, "genre") == 0)
 		tagscallcb(ctx, Tgenre, v, 0, 0);
-	else
-		return 0;
-	return 1;
 }
 
 int
-tagvorbis(Tagctx *ctx, int *num)
+tagvorbis(Tagctx *ctx)
 {
 	char *v;
 	uchar *d, h[4];
@@ -94,7 +91,7 @@ tagvorbis(Tagctx *ctx, int *num)
 		if((v = strchr(ctx->buf, '=')) == nil)
 			return -1;
 		*v++ = 0;
-		*num += cbvorbiscomment(ctx, ctx->buf, v);
+		cbvorbiscomment(ctx, ctx->buf, v);
 	}
 
 	/* calculate the duration */

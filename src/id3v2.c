@@ -5,6 +5,9 @@
  * http://id3.org/id3v2.4.0-frames
  * http://id3.org/d3v2.3.0
  * http://id3.org/id3v2-00
+ * http://mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
+ * http://wiki.hydrogenaud.io/index.php?title=MP3#VBRI.2C_XING.2C_and_LAME_headers
+ * http://www.codeproject.com/Articles/8295/MPEG-Audio-Frame-Header#VBRIHeader
  */
 #include "tagspriv.h"
 
@@ -292,6 +295,14 @@ getduration(Tagctx *ctx, int offset)
 
 		if(ctx->duration == 0 && (x & 2) != 0){ /* file size is set */
 			n = beuint(b);
+			ctx->duration = n * samplespf * 1000 / framelen / ctx->samplerate;
+		}
+	}else if(memcmp(&ctx->buf[0x24], "VBRI", 4) == 0){
+		n = beuint((uchar*)&ctx->buf[0x32]);
+		ctx->duration = n * samplespf * 1000 / ctx->samplerate;
+
+		if(ctx->duration == 0){
+			n = beuint((uchar*)&ctx->buf[0x28]); /* file size */
 			ctx->duration = n * samplespf * 1000 / framelen / ctx->samplerate;
 		}
 	}

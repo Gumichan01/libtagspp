@@ -265,7 +265,7 @@ getduration(Tagctx *ctx, int offset)
 	uvlong n, framelen, samplespf;
 	uchar *b;
 	uint x;
-	int xversion, xlayer, xbitrate, xsamplerate, bitrate;
+	int xversion, xlayer, xbitrate, bitrate;
 
 	if(ctx->read(ctx, ctx->buf, 64) != 64)
 		return;
@@ -274,43 +274,41 @@ getduration(Tagctx *ctx, int offset)
 	xversion = x >> 19 & 3;
 	xlayer = x >> 17 & 3;
 	xbitrate = x >> 12 & 0xf;
-	xsamplerate = x >> 10 & 3;
 	bitrate = 2*(int)bitrates[xversion][xlayer][xbitrate];
 	samplespf = samplesframe[xversion][xlayer];
-
-	framelen = 144*bitrate / samplerates[xversion][xsamplerate] / 1000;
-	if((x & (1<<9)) != 0) /* padding */
-		framelen += xlayer == 3 ? 4 : 1; /* for I it's 4 bytes */
 
 	ctx->samplerate = samplerates[xversion][x >> 10 & 3];
 	ctx->channels = chans[x >> 6 & 3];
 
-	if(bitrate == 0)
-		return;
+	if(ctx->samplerate > 0){
+		framelen = (uvlong)144000*bitrate / ctx->samplerate;
+		if((x & (1<<9)) != 0) /* padding */
+			framelen += xlayer == 3 ? 4 : 1; /* for I it's 4 bytes */
 
-	if(memcmp(&ctx->buf[0x24], "Info", 4) == 0 || memcmp(&ctx->buf[0x24], "Xing", 4) == 0){
-		b = (uchar*)ctx->buf + 0x28;
-		x = beuint(b); b += 4;
-		if((x & 1) != 0){ /* number of frames is set */
-			n = beuint(b); b += 4;
+		if(memcmp(&ctx->buf[0x24], "Info", 4) == 0 || memcmp(&ctx->buf[0x24], "Xing", 4) == 0){
+			b = (uchar*)ctx->buf + 0x28;
+			x = beuint(b); b += 4;
+			if((x & 1) != 0){ /* number of frames is set */
+				n = beuint(b); b += 4;
+				ctx->duration = n * samplespf * 1000 / ctx->samplerate;
+			}
+
+			if(ctx->duration == 0 && (x & 2) != 0 && framelen > 0){ /* file size is set */
+				n = beuint(b);
+				ctx->duration = n * samplespf * 1000 / framelen / ctx->samplerate;
+			}
+		}else if(memcmp(&ctx->buf[0x24], "VBRI", 4) == 0){
+			n = beuint((uchar*)&ctx->buf[0x32]);
 			ctx->duration = n * samplespf * 1000 / ctx->samplerate;
-		}
 
-		if(ctx->duration == 0 && (x & 2) != 0){ /* file size is set */
-			n = beuint(b);
-			ctx->duration = n * samplespf * 1000 / framelen / ctx->samplerate;
-		}
-	}else if(memcmp(&ctx->buf[0x24], "VBRI", 4) == 0){
-		n = beuint((uchar*)&ctx->buf[0x32]);
-		ctx->duration = n * samplespf * 1000 / ctx->samplerate;
-
-		if(ctx->duration == 0){
-			n = beuint((uchar*)&ctx->buf[0x28]); /* file size */
-			ctx->duration = n * samplespf * 1000 / framelen / ctx->samplerate;
+			if(ctx->duration == 0 && framelen > 0){
+				n = beuint((uchar*)&ctx->buf[0x28]); /* file size */
+				ctx->duration = n * samplespf * 1000 / framelen / ctx->samplerate;
+			}
 		}
 	}
 
-	if(ctx->duration == 0) /* worst case -- use real file size instead */
+	if(bitrate > 0 && ctx->duration == 0) /* worst case -- use real file size instead */
 		ctx->duration = (ctx->seek(ctx, 0, 2) - offset)/bitrate * 8;
 }
 

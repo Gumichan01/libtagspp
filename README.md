@@ -3,7 +3,7 @@ libtags
 
 A cross-platform library for reading tags, designed for highly constrained environments.
 
-Comparison to id3lib:
+Comparison to id3lib and taglib:
 
 ```
 ╭────────────────┬─────────────────┬──────────────────┬──────────────────╮

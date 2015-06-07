@@ -276,8 +276,11 @@ getduration(Tagctx *ctx, int offset)
 	xbitrate = x >> 12 & 0xf;
 	xsamplerate = x >> 10 & 3;
 	bitrate = 2*(int)bitrates[xversion][xlayer][xbitrate];
-	framelen = 144*bitrate / (samplerates[xversion][xsamplerate] / 1000) + !!(x & (1<<9));
 	samplespf = samplesframe[xversion][xlayer];
+
+	framelen = 144*bitrate / samplerates[xversion][xsamplerate] / 1000;
+	if((x & (1<<9)) != 0) /* padding */
+		framelen += xlayer == 3 ? 4 : 1; /* for I it's 4 bytes */
 
 	ctx->samplerate = samplerates[xversion][x >> 10 & 3];
 	ctx->channels = chans[x >> 6 & 3];

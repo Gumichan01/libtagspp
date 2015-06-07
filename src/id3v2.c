@@ -126,22 +126,198 @@ resync(uchar *b, int sz)
 	return sz;
 }
 
+static int
+nontext(Tagctx *ctx, uchar *d, int tsz, int unsync)
+{
+	int n, offset, num;
+	char *b, *tag;
+
+	tag = ctx->buf;
+	n = num = 0;
+	if(memcmp(d, "APIC", 4) == 0){
+		offset = ctx->seek(ctx, 0, 1);
+		if((n = ctx->read(ctx, tag, 256)) == 256){ /* APIC mime and description should fit */
+			b = tag + 1; /* mime type */
+			for(n = 1 + strlen(b) + 2; n < 253; n++){
+				if(tag[0] == 0 || tag[0] == 3){ /* one zero byte */
+					if(tag[n] == 0){
+						n++;
+						break;
+					}
+				}else if(tag[n] == 0 && tag[n+1] == 0 && tag[n+2] == 0){
+					n += 3;
+					break;
+				}
+			}
+			tagscallcb(ctx, Timage, b, offset+n, tsz-n);
+			num = 1;
+			n = 256;
+		}
+	}else if(memcmp(d, "RVA2", 4) == 0 && tsz >= 6+5){
+		/* replay gain. 6 = "track\0", 5 = other */
+		if(ctx->bufsz >= tsz && (n = ctx->read(ctx, tag, tsz)) == tsz)
+			if(rva2(ctx, tag, unsync ? resync((uchar*)tag, n) : n) == 0)
+				num = 1;
+	}
+
+	ctx->seek(ctx, tsz-n, 1);
+
+	return num;
+}
+
+static int
+text(Tagctx *ctx, uchar *d, int tsz, int unsync)
+{
+	int num;
+	char *b, *tag;
+
+	num = 0;
+	if(ctx->bufsz >= tsz+1){
+		/* place the data at the end to make best effort at charset conversion */
+		tag = &ctx->buf[ctx->bufsz - tsz - 1];
+		if(ctx->read(ctx, tag, tsz) != tsz)
+			return -1;
+	}else{
+		ctx->seek(ctx, tsz, 1);
+		return 0;
+	}
+
+	if(unsync)
+		tsz = resync((uchar*)tag, tsz);
+
+	tag[tsz] = 0;
+	b = &tag[1];
+
+	switch(tag[0]){
+	case 0: /* iso-8859-1 */
+		if(iso88591toutf8((uchar*)ctx->buf, ctx->bufsz, (uchar*)b, tsz) > 0)
+			num = v2cb(ctx, (char*)d, ctx->buf);
+		break;
+	case 1: /* utf-16 */
+	case 2:
+		if(utf16to8((uchar*)ctx->buf, ctx->bufsz, (uchar*)b, tsz) > 0)
+			num = v2cb(ctx, (char*)d, ctx->buf);
+		break;
+	case 3: /* utf-8 */
+		if(*b)
+			num = v2cb(ctx, (char*)d, b);
+		break;
+	}
+
+	return num;
+}
+
+static int
+isid3(uchar *d)
+{
+	/* "ID3" version[2] flags[1] size[4] */
+	return (
+		d[0] == 'I' && d[1] == 'D' && d[2] == '3' &&
+		d[3] < 0xff && d[4] < 0xff &&
+		d[6] < 0x80 && d[7] < 0x80 && d[8] < 0x80 && d[9] < 0x80
+	);
+}
+
+static const uchar bitrates[4][4][16] = {
+	{
+		{0},
+		{0,  4,  8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64,  72,  80, 0}, /* v2.5 III */
+		{0,  4,  8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64,  72,  80, 0}, /* v2.5 II */
+		{0, 16, 24, 28, 32, 40, 48, 56, 64, 72, 80, 88, 96, 112, 128, 0}, /* v2.5 I */
+	},
+	{ {0}, {0}, {0}, {0} },
+	{
+		{0},
+		{0,  4,  8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64,  72,  80, 0}, /* v2 III */
+		{0,  4,  8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64,  72,  80, 0}, /* v2 II */
+		{0, 16, 24, 28, 32, 40, 48, 56, 64, 72, 80, 88, 96, 112, 128, 0}, /* v2 I */
+	},
+	{
+		{0},
+		{0, 16, 20, 24, 28, 32, 40,  48,  56,  64,  80,  96, 112, 128, 160, 0}, /* v1 III */
+		{0, 16, 24, 28, 32, 40, 48,  56,  64,  80,  96, 112, 128, 160, 192, 0}, /* v1 II */
+		{0, 16, 32, 48, 64, 80, 96, 112, 128, 144, 160, 176, 192, 208, 224, 0}, /* v1 I */
+	}
+};
+
+static const uint samplerates[4][4] = {
+	{11025, 12000,  8000, 0},
+	{    0,     0,     0, 0},
+	{22050, 24000, 16000, 0},
+	{44100, 48000, 32000, 0},
+};
+
+static const int chans[] = {2, 2, 2, 1};
+
+static const int samplesframe[4][4] = {
+	{0,    0,    0,   0},
+	{0,  576, 1152, 384},
+	{0,  576, 1152, 384},
+	{0, 1152, 1152, 384},
+};
+
+static void
+getduration(Tagctx *ctx, int offset)
+{
+	uvlong n, framelen, samplespf;
+	uchar *b;
+	uint x;
+	int xversion, xlayer, xbitrate, xsamplerate, bitrate;
+
+	if(ctx->read(ctx, ctx->buf, 64) != 64)
+		return;
+
+	x = beuint((uchar*)ctx->buf);
+	xversion = x >> 19 & 3;
+	xlayer = x >> 17 & 3;
+	xbitrate = x >> 12 & 0xf;
+	xsamplerate = x >> 10 & 3;
+	bitrate = 2*(int)bitrates[xversion][xlayer][xbitrate];
+	framelen = 144*bitrate / (samplerates[xversion][xsamplerate] / 1000) + !!(x & (1<<9));
+	samplespf = samplesframe[xversion][xlayer];
+
+	ctx->samplerate = samplerates[xversion][x >> 10 & 3];
+	ctx->channels = chans[x >> 6 & 3];
+
+	if(bitrate == 0)
+		return;
+
+	if(memcmp(&ctx->buf[0x24], "Info", 4) == 0 || memcmp(&ctx->buf[0x24], "Xing", 4) == 0){
+		b = (uchar*)ctx->buf + 0x28;
+		x = beuint(b); b += 4;
+		if((x & 1) != 0){ /* number of frames is set */
+			n = beuint(b); b += 4;
+			ctx->duration = n * samplespf * 1000 / ctx->samplerate;
+		}
+
+		if(ctx->duration == 0 && (x & 2) != 0){ /* file size is set */
+			n = beuint(b);
+			ctx->duration = n * samplespf * 1000 / framelen / ctx->samplerate;
+		}
+	}
+
+	if(ctx->duration == 0) /* worst case -- use real file size instead */
+		ctx->duration = (ctx->seek(ctx, 0, 2) - offset)/bitrate * 8;
+}
+
 int
 tagid3v2(Tagctx *ctx, int *num)
 {
-	char *tag;
 	int sz, exsz, framesz;
 	int ver, unsync, offset;
-	uchar d[10];
+	uchar d[10], *b;
 
 	if(ctx->read(ctx, d, sizeof(d)) != sizeof(d))
 		return -1;
-	/* "ID3" version[2] flags[1] size[4] */
-	if(d[0] != 'I' || d[1] != 'D' || d[2] != '3' ||
-		d[3] == 0xff || d[4] == 0xff ||
-		d[6] >= 0x80 || d[7] >= 0x80 || d[8] >= 0x80 || d[9] >= 0x80)
-		return -1;
+	if(!isid3(d)){ /* no tags, but the stream information is there */
+		if(d[0] != 0xff || (d[1] & 0xe0) != 0xe0)
+			return -1;
+		ctx->seek(ctx, -(int)sizeof(d), 1);
+		getduration(ctx, 0);
+		return 0;
+	}
 
+header:
 	ver = d[3];
 	unsync = d[5] & (1<<7);
 	sz = synchsafe(&d[6]);
@@ -165,11 +341,11 @@ tagid3v2(Tagctx *ctx, int *num)
 	framesz = (ver >= 3) ? 10 : 6;
 	for(; sz > framesz;){
 		int tsz, frameunsync;
-		char *b;
 
-		tag = ctx->buf;
 		if(ctx->read(ctx, d, framesz) != framesz)
 			return -1;
+		sz -= framesz;
+
 		/* return on padding */
 		if(memcmp(d, "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", framesz) == 0)
 			break;
@@ -198,75 +374,32 @@ tagid3v2(Tagctx *ctx, int *num)
 			frameunsync = 0;
 			d[3] = 0;
 		}
-		sz -= framesz;
+		sz -= tsz;
 
-		if(d[0] != 'T'){ /* skip non-text tags */
-			if(memcmp(d, "APIC", 4) == 0){ /* need to skip APIC-specific header */
-				offset = ctx->seek(ctx, 0, 1);
-				if(ctx->read(ctx, tag, 256) == 256){ /* APIC mime and description should fit */
-					b = &tag[1]; /* mime type */
-					for(exsz = 1 + strlen(b) + 2; exsz < 253; exsz++){
-						if(tag[0] == 0 || tag[0] == 3){ /* one zero byte */
-							if(tag[exsz] == 0){
-								exsz++;
-								break;
-							}
-						}else if(tag[exsz] == 0 && tag[exsz+1] == 0 && tag[exsz+2] == 0){
-							exsz += 3;
-							break;
-						}
-					}
-					tagscallcb(ctx, Timage, b, offset+exsz, tsz-exsz);
-					tsz -= 256;
-				}
-			}else if(memcmp(d, "RVA2", 4) == 0 && tsz >= 6+5){
-				/* replay gain. 6 = "track\0", 5 = other */
-				if(ctx->bufsz >= tsz){
-					if(ctx->read(ctx, tag, tsz) != tsz)
-						return -1;
-					if(unsync || frameunsync)
-						tsz = resync((uchar*)tag, tsz);
-					rva2(ctx, tag, tsz);
-					tsz = 0;
-				}
-			}
-			ctx->seek(ctx, tsz, 1);
-			sz -= tsz;
-		}else{
-			sz -= tsz;
-			if(ctx->bufsz >= tsz+1){
-				/* place the data at the end to make best effort at charset convertion */
-				tag = &ctx->buf[ctx->bufsz - tsz - 1];
-				if(ctx->read(ctx, tag, tsz) != tsz)
-					return -1;
-			}else{
-				ctx->seek(ctx, tsz, 1);
-				continue;
-			}
+		*num += (d[0] == 'T' ? text : nontext)(ctx, d, tsz, unsync || frameunsync);
+	}
 
-			if(unsync || frameunsync)
-				tsz = resync((uchar*)tag, tsz);
-
-			tag[tsz] = 0;
-			b = &tag[1];
-
-			switch(tag[0]){
-			case 0: /* iso-8859-1 */
-				if(iso88591toutf8((uchar*)ctx->buf, ctx->bufsz, (uchar*)b, tsz) > 0)
-					*num += v2cb(ctx, (char*)d, ctx->buf);
-				break;
-			case 1: /* utf-16 */
-			case 2:
-				if(utf16to8((uchar*)ctx->buf, ctx->bufsz, (uchar*)b, tsz) > 0)
-					*num += v2cb(ctx, (char*)d, ctx->buf);
-				break;
-			case 3: /* utf-8 */
-				if(*b)
-					*num += v2cb(ctx, (char*)d, b);
-				break;
-			}
+	offset = ctx->seek(ctx, sz, 1);
+	sz = ctx->bufsz <= 4096 ? ctx->bufsz : 4096;
+	b = nil;
+	for(exsz = 0; exsz < 8096; exsz += sz){
+		if(ctx->read(ctx, ctx->buf, sz) != sz)
+			break;
+		for(b = (uchar*)ctx->buf; (b = memchr(b, 'I', sz - 1 - ((char*)b - ctx->buf))) != nil; b++){
+			ctx->seek(ctx, (char*)b - ctx->buf + offset + exsz, 0);
+			if(ctx->read(ctx, d, sizeof(d)) != sizeof(d))
+				return 0;
+			if(isid3(d))
+				goto header;
+		}
+		if((b = memchr(ctx->buf, 0xff, sz-1)) != nil && (b[1] & 0xe0) == 0xe0){
+			offset = ctx->seek(ctx, (char*)b - ctx->buf + offset + exsz, 0);
+			break;
 		}
 	}
+
+	if(b != nil)
+		getduration(ctx, offset);
 
 	return 0;
 }

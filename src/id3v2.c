@@ -17,21 +17,18 @@
 static int
 v2cb(Tagctx *ctx, char *k, char *v)
 {
-	if(memcmp(k, "TAL\x00", 4) == 0 || memcmp(k, "TALB", 5) == 0)
+	k++;
+	if(strcmp(k, "AL") == 0 || strcmp(k, "ALB") == 0)
 		tagscallcb(ctx, Talbum, v, 0, 0);
-	else if(memcmp(k, "TPE1", 5) == 0 || memcmp(k, "TPE2", 5) == 0)
+	else if(strcmp(k, "PE1") == 0 || strcmp(k, "PE2") == 0 || strcmp(k, "P1") == 0 || strcmp(k, "P2") == 0)
 		tagscallcb(ctx, Tartist, v, 0, 0);
-	else if(memcmp(k, "TP", 2) == 0 && (k[2] == '1' || k[2] == '2'))
-		tagscallcb(ctx, Tartist, v, 0, 0);
-	else if(strcmp(k, "TIT2") == 0 || strcmp(k, "TT2") == 0)
+	else if(strcmp(k, "IT2") == 0 || strcmp(k, "T2") == 0)
 		tagscallcb(ctx, Ttitle, v, 0, 0);
-	else if(memcmp(k, "TYE", 3) == 0 && (k[3] == 0 || k[3] == 'R'))
+	else if(strcmp(k, "YE") == 0 || strcmp(k, "YER") == 0 || strcmp(k, "DRC") == 0)
 		tagscallcb(ctx, Tdate, v, 0, 0);
-	else if(strcmp(k, "TDRC") == 0)
-		tagscallcb(ctx, Tdate, v, 0, 0);
-	else if(strcmp(k, "TRK") == 0 || strcmp(k, "TRCK") == 0)
+	else if(strcmp(k, "RK") == 0 || strcmp(k, "RCK") == 0)
 		tagscallcb(ctx, Ttrack, v, 0, 0);
-	else if(memcmp(k, "TCO", 3) == 0 && (k[3] == 0 || k[3] == 'N')){
+	else if(strcmp(k, "CO") == 0 && strcmp(k, "CON") == 0){
 		for(; v[0]; v++){
 			if(v[0] == '(' && v[1] <= '9' && v[1] >= '0'){
 				int i = atoi(&v[1]);
@@ -44,7 +41,7 @@ v2cb(Tagctx *ctx, char *k, char *v)
 				break;
 			}
 		}
-	}else if(strcmp(k, "TXXX") == 0 && strncmp(v, "REPLAYGAIN_", 11) == 0){
+	}else if(strcmp(k, "XXX") == 0 && strncmp(v, "REPLAYGAIN_", 11) == 0){
 		int type = -1;
 		v += 11;
 		if(strncmp(v, "TRACK_", 6) == 0){
@@ -100,10 +97,10 @@ rva2(Tagctx *ctx, char *tag, int sz)
 			vas[sizeof(vas)-1] = 0;
 			peaks[sizeof(peaks)-1] = 0;
 
-			if(strcmp((char*)tag, "track")){
+			if(strcmp((char*)tag, "track") == 0){
 				tagscallcb(ctx, Ttrackgain, vas, 0, 0);
 				tagscallcb(ctx, Ttrackpeak, peaks, 0, 0);
-			}else if(strcmp((char*)tag, "album")){
+			}else if(strcmp((char*)tag, "album") == 0){
 				tagscallcb(ctx, Talbumgain, vas, 0, 0);
 				tagscallcb(ctx, Talbumpeak, peaks, 0, 0);
 			}

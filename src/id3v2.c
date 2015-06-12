@@ -370,7 +370,7 @@ header:
 				tsz -= 4;
 			}
 		}else{
-			tsz = synchsafe(&d[3]) >> 7;
+			tsz = beuint(&d[3]) >> 8;
 			if(tsz > sz)
 				return -1;
 			frameunsync = 0;

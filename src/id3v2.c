@@ -134,7 +134,7 @@ nontext(Tagctx *ctx, uchar *d, int tsz, int unsync)
 
 	tag = ctx->buf;
 	n = 0;
-	if(memcmp(d, "APIC", 4) == 0){
+	if(strcmp((char*)d, "APIC") == 0){
 		offset = ctx->seek(ctx, 0, 1);
 		if((n = ctx->read(ctx, tag, 256)) == 256){ /* APIC mime and description should fit */
 			b = tag + 1; /* mime type */
@@ -152,7 +152,25 @@ nontext(Tagctx *ctx, uchar *d, int tsz, int unsync)
 			tagscallcb(ctx, Timage, b, offset+n, tsz-n);
 			n = 256;
 		}
-	}else if(memcmp(d, "RVA2", 4) == 0 && tsz >= 6+5){
+	}else if(strcmp((char*)d, "PIC") == 0){
+		offset = ctx->seek(ctx, 0, 1);
+		if((n = ctx->read(ctx, tag, 256)) == 256){ /* PIC description should fit */
+			b = tag + 1; /* mime type */
+			for(n = 5; n < 253; n++){
+				if(tag[0] == 0 || tag[0] == 3){ /* one zero byte */
+					if(tag[n] == 0){
+						n++;
+						break;
+					}
+				}else if(tag[n] == 0 && tag[n+1] == 0 && tag[n+2] == 0){
+					n += 3;
+					break;
+				}
+			}
+			tagscallcb(ctx, Timage, strcmp(b, "JPG") == 0 ? "image/jpeg" : "image/png", offset+n, tsz-n);
+			n = 256;
+		}
+	}else if(strcmp((char*)d, "RVA2") == 0 && tsz >= 6+5){
 		/* replay gain. 6 = "track\0", 5 = other */
 		if(ctx->bufsz >= tsz && (n = ctx->read(ctx, tag, tsz)) == tsz)
 			rva2(ctx, tag, unsync ? resync((uchar*)tag, n) : n);

@@ -24,10 +24,10 @@ static const Getter g[] =
 };
 
 void
-tagscallcb(Tagctx *ctx, int type, const char *s, int offset, int size)
+tagscallcb(Tagctx *ctx, int type, const char *s, int offset, int size, Tagread f)
 {
 	ctx->found |= 1<<type;
-	ctx->tag(ctx, type, s, offset, size);
+	ctx->tag(ctx, type, s, offset, size, f);
 	ctx->num++;
 }
 

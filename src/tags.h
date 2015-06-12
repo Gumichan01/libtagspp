@@ -3,6 +3,7 @@
 #endif
 
 typedef struct Tagctx Tagctx;
+typedef int (*Tagread)(void *buf, int *cnt);
 
 enum
 {
@@ -31,7 +32,7 @@ struct Tagctx
 	const char *filename;
 	int (*read)(Tagctx *ctx, void *buf, int cnt);
 	int (*seek)(Tagctx *ctx, int offset, int whence);
-	void (*tag)(Tagctx *ctx, int type, const char *s, int offset, int size);
+	void (*tag)(Tagctx *ctx, int type, const char *s, int offset, int size, Tagread f);
 	void *aux;
 	char *buf;
 	int bufsz;

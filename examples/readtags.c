@@ -38,9 +38,9 @@ static const char *t2s[] =
 };
 
 static void
-cb(Tagctx *ctx, int t, const char *v, int offset, int size)
+cb(Tagctx *ctx, int t, const char *v, int offset, int size, Tagread f)
 {
-	USED(ctx); USED(offset); USED(size);
+	USED(ctx); USED(offset); USED(size); USED(f);
 	if(t == Timage)
 		print("%-12s %s %d %d\n", t2s[t], v, offset, size);
 	else

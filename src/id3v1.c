@@ -26,23 +26,23 @@ tagid3v1(Tagctx *ctx)
 		return -1;
 
 	if((ctx->found & 1<<Ttitle) == 0 && iso88591toutf8(out, Outsz, &in[3], 30) > 0)
-		tagscallcb(ctx, Ttitle, (char*)out, 0, 0);
+		txtcb(ctx, Ttitle, out);
 	if((ctx->found & 1<<Tartist) == 0 && iso88591toutf8(out, Outsz, &in[33], 30) > 0)
-		tagscallcb(ctx, Tartist, (char*)out, 0, 0);
+		txtcb(ctx, Tartist, out);
 	if((ctx->found & 1<<Talbum) == 0 && iso88591toutf8(out, Outsz, &in[63], 30) > 0)
-		tagscallcb(ctx, Talbum, (char*)out, 0, 0);
+		txtcb(ctx, Talbum, out);
 
 	in[93+4] = 0;
 	if((ctx->found & 1<<Tdate) == 0 && in[93] != 0)
-		tagscallcb(ctx, Tdate, (char*)&in[93], 0, 0);
+		txtcb(ctx, Tdate, &in[93]);
 
 	if((ctx->found & 1<<Ttrack) == 0 && in[125] == 0 && in[126] > 0){
 		snprint((char*)out, Outsz, "%d", in[126]);
-		tagscallcb(ctx, Ttrack, (char*)out, 0, 0);
+		txtcb(ctx, Ttrack, out);
 	}
 
 	if((ctx->found & 1<<Tgenre) == 0 && in[127] < Numgenre)
-		tagscallcb(ctx, Tgenre, id3genres[in[127]], 0, 0);
+		txtcb(ctx, Tgenre, id3genres[in[127]]);
 
 	return 0;
 }

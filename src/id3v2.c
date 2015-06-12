@@ -19,25 +19,25 @@ v2cb(Tagctx *ctx, char *k, char *v)
 {
 	k++;
 	if(strcmp(k, "AL") == 0 || strcmp(k, "ALB") == 0)
-		tagscallcb(ctx, Talbum, v, 0, 0);
+		txtcb(ctx, Talbum, v);
 	else if(strcmp(k, "PE1") == 0 || strcmp(k, "PE2") == 0 || strcmp(k, "P1") == 0 || strcmp(k, "P2") == 0)
-		tagscallcb(ctx, Tartist, v, 0, 0);
+		txtcb(ctx, Tartist, v);
 	else if(strcmp(k, "IT2") == 0 || strcmp(k, "T2") == 0)
-		tagscallcb(ctx, Ttitle, v, 0, 0);
+		txtcb(ctx, Ttitle, v);
 	else if(strcmp(k, "YE") == 0 || strcmp(k, "YER") == 0 || strcmp(k, "DRC") == 0)
-		tagscallcb(ctx, Tdate, v, 0, 0);
+		txtcb(ctx, Tdate, v);
 	else if(strcmp(k, "RK") == 0 || strcmp(k, "RCK") == 0)
-		tagscallcb(ctx, Ttrack, v, 0, 0);
+		txtcb(ctx, Ttrack, v);
 	else if(strcmp(k, "CO") == 0 && strcmp(k, "CON") == 0){
 		for(; v[0]; v++){
 			if(v[0] == '(' && v[1] <= '9' && v[1] >= '0'){
 				int i = atoi(&v[1]);
 				if(i < Numgenre)
-					tagscallcb(ctx, Tgenre, id3genres[i], 0, 0);
+					txtcb(ctx, Tgenre, id3genres[i]);
 				for(v++; v[0] && v[0] != ')'; v++);
 				v--;
 			}else if(v[0] != '(' && v[0] != ')'){
-				tagscallcb(ctx, Tgenre, v, 0, 0);
+				txtcb(ctx, Tgenre, v);
 				break;
 			}
 		}
@@ -58,7 +58,7 @@ v2cb(Tagctx *ctx, char *k, char *v)
 				type = Talbumpeak;
 		}
 		if(type >= 0)
-			tagscallcb(ctx, type, v+5, 0, 0);
+			txtcb(ctx, type, v+5);
 		else
 			return 0;
 	}else
@@ -98,11 +98,11 @@ rva2(Tagctx *ctx, char *tag, int sz)
 			peaks[sizeof(peaks)-1] = 0;
 
 			if(strcmp((char*)tag, "track") == 0){
-				tagscallcb(ctx, Ttrackgain, vas, 0, 0);
-				tagscallcb(ctx, Ttrackpeak, peaks, 0, 0);
+				txtcb(ctx, Ttrackgain, vas);
+				txtcb(ctx, Ttrackpeak, peaks);
 			}else if(strcmp((char*)tag, "album") == 0){
-				tagscallcb(ctx, Talbumgain, vas, 0, 0);
-				tagscallcb(ctx, Talbumpeak, peaks, 0, 0);
+				txtcb(ctx, Talbumgain, vas);
+				txtcb(ctx, Talbumpeak, peaks);
 			}
 			break;
 		}
@@ -127,13 +127,35 @@ resync(uchar *b, int sz)
 }
 
 static int
+unsyncread(void *buf, int *sz)
+{
+	int i;
+	uchar *b;
+
+	b = buf;
+	for(i = 0; i < *sz; i++){
+		if(b[i] == 0xff){
+			if(i+1 >= *sz || (b[i+1] == 0x00 && i+2 >= *sz))
+				break;
+			if(b[i+1] == 0x00 && (b[i+2] & 0xe0) == 0xe0){
+				memmove(&b[i+1], &b[i+2], *sz-i-2);
+				(*sz)--;
+			}
+		}
+	}
+	return i;
+}
+
+static int
 nontext(Tagctx *ctx, uchar *d, int tsz, int unsync)
 {
 	int n, offset;
 	char *b, *tag;
+	Tagread f;
 
 	tag = ctx->buf;
 	n = 0;
+	f = unsync ? unsyncread : nil;
 	if(strcmp((char*)d, "APIC") == 0){
 		offset = ctx->seek(ctx, 0, 1);
 		if((n = ctx->read(ctx, tag, 256)) == 256){ /* APIC mime and description should fit */
@@ -149,7 +171,7 @@ nontext(Tagctx *ctx, uchar *d, int tsz, int unsync)
 					break;
 				}
 			}
-			tagscallcb(ctx, Timage, b, offset+n, tsz-n);
+			tagscallcb(ctx, Timage, b, offset+n, tsz-n, f);
 			n = 256;
 		}
 	}else if(strcmp((char*)d, "PIC") == 0){
@@ -167,7 +189,7 @@ nontext(Tagctx *ctx, uchar *d, int tsz, int unsync)
 					break;
 				}
 			}
-			tagscallcb(ctx, Timage, strcmp(b, "JPG") == 0 ? "image/jpeg" : "image/png", offset+n, tsz-n);
+			tagscallcb(ctx, Timage, strcmp(b, "JPG") == 0 ? "image/jpeg" : "image/png", offset+n, tsz-n, f);
 			n = 256;
 		}
 	}else if(strcmp((char*)d, "RVA2") == 0 && tsz >= 6+5){

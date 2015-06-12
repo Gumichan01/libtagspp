@@ -51,7 +51,7 @@ tagflac(Tagctx *ctx)
 			offset = beuint(d) + ctx->seek(ctx, 0, 1) + 20;
 			ctx->read(ctx, d, 20);
 			n = beuint(&d[16]);
-			tagscallcb(ctx, Timage, mime, offset, n);
+			tagscallcb(ctx, Timage, mime, offset, n, nil);
 		}else if((d[0] & 0x7f) == 4){ /* 4 = vorbis comment */
 			int i, numtags, tagsz, vensz;
 			char *k, *v;

@@ -56,13 +56,16 @@ tagvorbis(Tagctx *ctx)
 
 		if(d[nsegs] == 3) /* comment */
 			break;
-		if(d[nsegs] == 1 && sz >= 16){ /* identification */
-			if(ctx->read(ctx, d, 16) != 16)
+		if(d[nsegs] == 1 && sz >= 28){ /* identification */
+			if(ctx->read(ctx, d, 28) != 28)
 				return -1;
-			sz -= 16;
+			sz -= 28;
 			ctx->channels = d[10];
 			ctx->samplerate = leuint(&d[11]);
+			if((ctx->bitrate = leuint(&d[15])) == 0) /* maximum */
+				ctx->bitrate = leuint(&d[19]); /* nominal */
 		}
+
 		ctx->seek(ctx, sz-1, 1);
 	}
 
@@ -95,22 +98,24 @@ tagvorbis(Tagctx *ctx)
 	}
 
 	/* calculate the duration */
-	sz = ctx->bufsz <= 4096 ? ctx->bufsz : 4096;
-	for(i = sz; i < 65536+16; i += sz - 16){
-		if(ctx->seek(ctx, -i, 2) <= 0)
-			break;
-		v = ctx->buf;
-		if(ctx->read(ctx, v, sz) != sz)
-			break;
-		for(; v != nil && v < ctx->buf+sz;){
-			v = memchr(v, 'O', ctx->buf+sz - v - 14);
-			if(v != nil && v[1] == 'g' && v[2] == 'g' && v[3] == 'S' && (v[5] & 4) == 4){ /* last page */
-				uvlong g = leuint(v+6) | (uvlong)leuint(v+10)<<32;
-				ctx->duration = g * 1000 / ctx->samplerate;
-				return 0;
+	if(ctx->samplerate > 0){
+		sz = ctx->bufsz <= 4096 ? ctx->bufsz : 4096;
+		for(i = sz; i < 65536+16; i += sz - 16){
+			if(ctx->seek(ctx, -i, 2) <= 0)
+				break;
+			v = ctx->buf;
+			if(ctx->read(ctx, v, sz) != sz)
+				break;
+			for(; v != nil && v < ctx->buf+sz;){
+				v = memchr(v, 'O', ctx->buf+sz - v - 14);
+				if(v != nil && v[1] == 'g' && v[2] == 'g' && v[3] == 'S' && (v[5] & 4) == 4){ /* last page */
+					uvlong g = leuint(v+6) | (uvlong)leuint(v+10)<<32;
+					ctx->duration = g * 1000 / ctx->samplerate;
+					return 0;
+				}
+				if(v != nil)
+					v++;
 			}
-			if(v != nil)
-				v++;
 		}
 	}
 

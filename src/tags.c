@@ -40,9 +40,7 @@ tagsget(Tagctx *ctx)
 	len = 0;
 	if(ctx->filename != nil && (len = strlen(ctx->filename)) < 5)
 		return -1;
-	ctx->channels = 0;
-	ctx->samplerate = 0;
-	ctx->duration = 0;
+	ctx->channels = ctx->samplerate = ctx->bitrate = ctx->duration = 0;
 	ctx->found = 0;
 	ctx->format = -1;
 	res = -1;

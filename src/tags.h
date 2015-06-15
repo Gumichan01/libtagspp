@@ -39,6 +39,7 @@ struct Tagctx
 
 	int channels;
 	int samplerate;
+	int bitrate;
 	int duration; /* ms */
 	int format;
 

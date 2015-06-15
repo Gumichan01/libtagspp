@@ -97,6 +97,8 @@ main(int argc, char **argv)
 					print("%-12s %d\n", "samplerate", ctx.samplerate);
 				if(ctx.channels > 0)
 					print("%-12s %d\n", "channels", ctx.channels);
+				if(ctx.bitrate > 0)
+					print("%-12s %d\n", "bitrate", ctx.bitrate);
 			}
 			close(aux.fd);
 		}

@@ -296,7 +296,7 @@ getduration(Tagctx *ctx, int offset)
 	uvlong n, framelen, samplespf;
 	uchar *b;
 	uint x;
-	int xversion, xlayer, xbitrate, bitrate;
+	int xversion, xlayer, xbitrate;
 
 	if(ctx->read(ctx, ctx->buf, 64) != 64)
 		return;
@@ -305,14 +305,14 @@ getduration(Tagctx *ctx, int offset)
 	xversion = x >> 19 & 3;
 	xlayer = x >> 17 & 3;
 	xbitrate = x >> 12 & 0xf;
-	bitrate = 2*(int)bitrates[xversion][xlayer][xbitrate];
+	ctx->bitrate = 2000*(int)bitrates[xversion][xlayer][xbitrate];
 	samplespf = samplesframe[xversion][xlayer];
 
 	ctx->samplerate = samplerates[xversion][x >> 10 & 3];
 	ctx->channels = chans[x >> 6 & 3];
 
 	if(ctx->samplerate > 0){
-		framelen = (uvlong)144000*bitrate / ctx->samplerate;
+		framelen = (uvlong)144*ctx->bitrate / ctx->samplerate;
 		if((x & (1<<9)) != 0) /* padding */
 			framelen += xlayer == 3 ? 4 : 1; /* for I it's 4 bytes */
 
@@ -339,8 +339,8 @@ getduration(Tagctx *ctx, int offset)
 		}
 	}
 
-	if(bitrate > 0 && ctx->duration == 0) /* worst case -- use real file size instead */
-		ctx->duration = (ctx->seek(ctx, 0, 2) - offset)/bitrate * 8;
+	if(ctx->bitrate > 0 && ctx->duration == 0) /* worst case -- use real file size instead */
+		ctx->duration = (ctx->seek(ctx, 0, 2) - offset)/(ctx->bitrate / 1000) * 8;
 }
 
 int

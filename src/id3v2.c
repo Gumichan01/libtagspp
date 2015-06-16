@@ -28,7 +28,7 @@ v2cb(Tagctx *ctx, char *k, char *v)
 		txtcb(ctx, Tdate, v);
 	else if(strcmp(k, "RK") == 0 || strcmp(k, "RCK") == 0)
 		txtcb(ctx, Ttrack, v);
-	else if(strcmp(k, "CO") == 0 && strcmp(k, "CON") == 0){
+	else if(strcmp(k, "CO") == 0 || strcmp(k, "CON") == 0){
 		for(; v[0]; v++){
 			if(v[0] == '(' && v[1] <= '9' && v[1] >= '0'){
 				int i = atoi(&v[1]);

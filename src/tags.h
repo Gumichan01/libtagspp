@@ -25,6 +25,7 @@ enum
 	Fmp3,
 	Fogg,
 	Fflac,
+	Fm4a,
 };
 
 struct Tagctx

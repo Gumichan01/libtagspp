@@ -14,6 +14,7 @@ extern int tagvorbis(Tagctx *ctx);
 extern int tagflac(Tagctx *ctx);
 extern int tagid3v2(Tagctx *ctx);
 extern int tagid3v1(Tagctx *ctx);
+extern int tagm4a(Tagctx *ctx);
 
 static const Getter g[] =
 {
@@ -21,6 +22,7 @@ static const Getter g[] =
 	{tagid3v1, ".mp3", 4, Fmp3},
 	{tagvorbis, ".ogg", 4, Fogg},
 	{tagflac, ".flac", 5, Fflac},
+	{tagm4a, ".m4a", 4, Fm4a},
 };
 
 void

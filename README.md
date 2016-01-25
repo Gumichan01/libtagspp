@@ -10,6 +10,7 @@ Comparison to id3lib and taglib:
 | ID3v2.4        | yes             | no               | yes              |
 | Ogg/Vorbis     | yes             | no               | yes              |
 | FLAC           | yes             | no               | yes              |
+| m4a            | yes             | no               | yes              |
 | replay gain    | yes             | no               | ???              |
 | size           | tiny            | bloated          | more bloated     |
 | license        | MIT             | LGPL             | LGPL/MPL         |

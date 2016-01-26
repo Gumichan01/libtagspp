@@ -10,7 +10,7 @@ tagm4a(Tagctx *ctx)
 {
 	uvlong duration;
 	uchar *d;
-	int sz, type, dtype, i, n;
+	int sz, type, dtype, i, skip, n;
 
 	d = (uchar*)ctx->buf;
 	/* 4 bytes for atom size, 4 for type, 4 for data - exect "ftyp" to come first */
@@ -46,25 +46,33 @@ tagm4a(Tagctx *ctx)
 			sz = 0;
 			continue;
 		}else if(memcmp(d, "stsd", 4) == 0){
+			sz -= 8;
 			if(ctx->read(ctx, d, 8) != 8)
 				return -1;
 			sz -= 8;
+
 			for(i = beuint(&d[4]); i > 0 && sz > 0; i--){
 				if(ctx->read(ctx, d, 8) != 8) /* size + format */
 					return -1;
 				sz -= 8;
+				skip = beuint(d) - 8;
+
 				if(memcmp(&d[4], "mp4a", 4) == 0){ /* audio */
 					n = 6+2 + 2+4+2 + 2+2 + 2+2 + 4; /* read a bunch at once */
 					/* reserved+id, ver+rev+vendor, channels+bps, ?+?, sample rate */
 					if(ctx->read(ctx, d, n) != n)
 						return -1;
+					skip -= n;
 					sz -= n;
 					ctx->channels = beuint16(&d[16]);
-					ctx->bitrate = beuint16(&d[18]);
 					ctx->samplerate = beuint(&d[24])>>16;
-					break;
 				}
+
+				if(ctx->seek(ctx, skip, 1) < 0)
+					return -1;
+				sz -= skip;
 			}
+			continue;
 		}
 
 		sz -= 8;

@@ -60,6 +60,7 @@ tagm4a(Tagctx *ctx)
 						return -1;
 					sz -= n;
 					ctx->channels = beuint16(&d[16]);
+					ctx->bitrate = beuint16(&d[18]);
 					ctx->samplerate = beuint(&d[24])>>16;
 					break;
 				}

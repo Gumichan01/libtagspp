@@ -1,6 +1,5 @@
-LIB=/$objtype/lib/libtags.a
-
 </$objtype/mkfile
+LIB=/$objtype/lib/libtags.a
 
 OFILES=\
 	8859.$O\

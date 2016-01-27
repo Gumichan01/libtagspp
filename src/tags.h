@@ -36,13 +36,13 @@ struct Tagctx
 	void (*tag)(Tagctx *ctx, int type, const char *s, int offset, int size, Tagread f);
 	void *aux;
 	char *buf;
-	int bufsz;
+	int bufsz; /* minimum 256 bytes */
 
 	int channels;
-	int samplerate;
+	int samplerate; /* Hz */
 	int bitrate;
 	int duration; /* ms */
-	int format;
+	int format; /* Fmp3, Fogg, Fflac, Fm4a */
 
 	/* private, don't touch */
 	int found;

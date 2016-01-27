@@ -65,7 +65,7 @@ int
 main(int argc, char **argv)
 {
 	int i;
-	char buf[1024];
+	char buf[256];
 	Aux aux;
 	Tagctx ctx =
 	{

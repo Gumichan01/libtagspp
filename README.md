@@ -32,3 +32,10 @@ CPU time (784 files: mp3, ogg, flac):
 | cache dropped  | real    0m1.158s | real    0m1.628s |
 |                | user    0m0.024s | user    0m0.211s |
 |                | sys     0m0.132s | sys     0m0.187s |
+
+## Usage
+
+Just compile it to an archive (`.a`) and link to your program. Use it in your code
+by including `tags.h`, that's the API. Documentation is in the header.
+
+See `examples/readtags.c`.

@@ -2,7 +2,7 @@
 
 stdenv.mkDerivation rec {
   name = "libtags";
-  src = fetchgitLocal ./.;
+  src = ./.;#fetchgitLocal ./.;
 
   buildInputs = [ mk ];
   propagatedBuildInputs = [ pkgconfig ];

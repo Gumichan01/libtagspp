@@ -1,64 +1,51 @@
-#ifdef __unix__
-#define _DEFAULT_SOURCE
-#include <fcntl.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <unistd.h>
-#define print printf
-#define seek lseek
-#define nil NULL
-#define OREAD O_RDONLY
-#define USED(x) (void)x
-#else
-#include <u.h>
-#include <libc.h>
-#endif
+
 #include <tags.h>
+#include <stdio.h>
 
 typedef struct Aux Aux;
 
 struct Aux
 {
-	int fd;
+	FILE * fd;
 };
 
 static const char *t2s[] =
 {
-	[Tartist] = "artist",
-	[Talbum] = "album",
-	[Ttitle] = "title",
-	[Tdate] = "date",
-	[Ttrack] = "track",
-	[Talbumgain] = "albumgain",
-	[Talbumpeak] = "albumpeak",
-	[Ttrackgain] = "trackgain",
-	[Ttrackpeak] = "trackpeak",
-	[Tgenre] = "genre",
-	[Timage] = "image",
+	[Tartist] = "Artist",
+	[Talbum] = "Album",
+	[Ttitle] = "Title",
+	[Tdate] = "Date",
+	[Ttrack] = "Track",
+	[Talbumgain] = "Albumgain",
+	[Talbumpeak] = "Albumpeak",
+	[Ttrackgain] = "Trackgain",
+	[Ttrackpeak] = "Trackpeak",
+	[Tgenre] = "Genre",
+	[Timage] = "Image",
 };
 
 static void
 cb(Tagctx *ctx, int t, const char *v, int offset, int size, Tagread f)
 {
-	USED(ctx); USED(offset); USED(size); USED(f);
 	if(t == Timage)
-		print("%-12s %s %d %d\n", t2s[t], v, offset, size);
+		printf("%-12s %s %d %d\n", t2s[t], v, offset, size);
 	else
-		print("%-12s %s\n", t2s[t], v);
+		printf("%-12s %s\n", t2s[t], v);
 }
 
 static int
 ctxread(Tagctx *ctx, void *buf, int cnt)
 {
 	Aux *aux = ctx->aux;
-	return read(aux->fd, buf, cnt);
+	return fread(buf,1,cnt,aux->fd);
 }
 
 static int
 ctxseek(Tagctx *ctx, int offset, int whence)
 {
 	Aux *aux = ctx->aux;
-	return seek(aux->fd, offset, whence);
+    fseek(aux->fd, offset, whence);
+	return ftell(aux->fd);
 }
 
 int
@@ -78,31 +65,31 @@ main(int argc, char **argv)
 	};
 
 	if(argc < 2){
-		print("usage: readtags FILE...\n");
+		printf("usage: readtags FILE...\n");
 		return -1;
 	}
 
 	for(i = 1; i < argc; i++){
-		print("*** %s\n", argv[i]);
-		if((aux.fd = open(argv[i], OREAD)) < 0)
-			print("failed to open\n");
+		printf("*** %s\n", argv[i]);
+		if((aux.fd = fopen(argv[i], "rb")) < 0)
+			printf("failed to open\n");
 		else{
 			ctx.filename = argv[i];
 			if(tagsget(&ctx) != 0)
-				print("no tags or failed to read tags\n");
+				printf("no tags or failed to read tags\n");
 			else{
 				if(ctx.duration > 0)
-					print("%-12s %d ms\n", "duration", ctx.duration);
+					printf("%-12s %d ms\n", "duration", ctx.duration);
 				if(ctx.samplerate > 0)
-					print("%-12s %d\n", "samplerate", ctx.samplerate);
+					printf("%-12s %d\n", "samplerate", ctx.samplerate);
 				if(ctx.channels > 0)
-					print("%-12s %d\n", "channels", ctx.channels);
+					printf("%-12s %d\n", "channels", ctx.channels);
 				if(ctx.bitrate > 0)
-					print("%-12s %d\n", "bitrate", ctx.bitrate);
+					printf("%-12s %d\n", "bitrate", ctx.bitrate);
 			}
-			close(aux.fd);
+			fclose(aux.fd);
 		}
-		print("\n");
+		printf("\n");
 	}
 	return 0;
 }

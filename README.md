@@ -5,37 +5,35 @@ A cross-platform library for reading tags, based on [libtags](https://github.com
 
 Comparison to id3lib and taglib:
 
-|                | libtags++       | id3lib           | taglib           |
-|:---------------|:----------------|:-----------------|:-----------------|
-| ID3v2.4        | yes             | no               | yes              |
-| Ogg/Vorbis     | yes             | no               | yes              |
-| FLAC           | yes             | no               | yes              |
-| m4a            | yes             | no               | yes              |
-| replay gain    | yes             | no               | ???              |
-| size           | tiny            | bloated          | more bloated     |
-| license        | MIT             | LGPL             | LGPL/MPL         |
-| written in     | C               | C++              | C++              |
-| ~~memory~~     | ~~no allocations~~  | ~~allocates memory~~ | ~~allocates memory~~ |
-| thread safe    | yes             | ???              | ???              |
-| ~~speed~~      | ~~ultra-fast~~  | ~~slow~~         | ~~fast~~         |
-| tag writing    | no, not a goal  | yes              | yes              |
-| Plan 9 support | yes, native     | no               | no               |
+|                | libtags++       | id3lib           | taglib                      |
+|:---------------|:----------------|:-----------------|:----------------------------|
+| ID3v2.4        | yes             | no               | yes                         |
+| Ogg/Vorbis     | yes             | no               | yes                         |
+| FLAC           | yes             | no               | yes                         |
+| m4a            | yes             | no               | yes                         |
+| replay gain    | yes             | no               | ???                         |
+| size           | tiny (~60 KB)   | bloated?         | more bloated (~2 MB, v1.11) |
+| license        | MIT             | LGPL             | LGPL/MPL                    |
+| written in     | C++             | C++              | C++                         |
+| memory         | no allocations  | allocates memory | allocates memory            |
+| thread safe    | yes             | ???              | ???                         |
+| tag writing    | no, not a goal  | yes              | yes                         |
 
-CPU time (784 files: mp3, ogg, flac):
-
-|                | libtags          | taglib           |
-|:---------------|:-----------------|:-----------------|
-| files cached   | real    0m0.027s | real    0m0.155s |
-|                | user    0m0.014s | user    0m0.102s |
-|                | sys     0m0.012s | sys     0m0.053s |
-|                |                  |                  |
-| cache dropped  | real    0m1.158s | real    0m1.628s |
-|                | user    0m0.024s | user    0m0.211s |
-|                | sys     0m0.132s | sys     0m0.187s |
 
 ## Example program
 
-**TODO**
+
+    libtagpp::Tag tag;
+    if(tag.readTag("Z-Bombs.mp3")
+    {
+        cout << "Title - " << tag.title() << endl                       // Z-Bombs.mp3
+             << "Artist - " << tag.artist() << endl                     // Comptroller
+             << "Album - " << tag.album() << endl                       // Baddies
+             << " ===============================" << endl
+             << "Duration - " << tag.properties().duration() << endl    // Electronic
+    }
+    else
+        cerr << "Cannot read the tag" << endl;
 
 ## Build
 

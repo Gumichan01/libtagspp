@@ -13,23 +13,32 @@ MAIN_DIR=examples/
 CODE_MAIN=$(MAIN_DIR)readtags.cpp
 OBJ_MAIN=$(MAIN_DIR)readtags.o
 
+LIBTAG_SRC=$(SRC_DIR)libtagpp.cpp
+LIBTAG_OBJ=$(OBJ_DIR)libtagpp.o
+
 EXE=rtags
 LIB=libtags.a
 
 all: $(LIB)
 
-$(LIB): $(OBJS)
+$(LIB): $(OBJS) $(LIBTAG_OBJ)
 	ar rcs $@ $^
 
 $(OBJ_DIR)%.o: $(OBJ_SRC)%.cpp
-	$(CC) -c $< -o $@
+	$(CC) -c $< -o $@ $(FLAGS)
 
 
-$(EXE): $(OBJ_MAIN) $(OBJS)
-	$(CC) $^ -o $@
+$(EXE): $(OBJ_MAIN) $(OBJS) $(LIBTAG_OBJ)
+	$(CC) $^ -o $@ $(FLAGS)
 
 $(OBJ_MAIN): $(CODE_MAIN)
-	$(CC) -c $< -o $@ -I $(SRC_DIR)
+	$(CC) -c $< -o $@ -I $(SRC_DIR) $(FLAGS)
+
+
+libtagpp.o: $(LIBTAG_OBJ)
+
+$(LIBTAG_OBJ): $(LIBTAG_SRC) $(SRC_DIR)libtagpp.hpp
+	$(CC) -c $< -o $@ -I $(SRC_DIR) $(FLAGS)
 
 clean:
 	rm -rf $(OBJ_DIR)*.o

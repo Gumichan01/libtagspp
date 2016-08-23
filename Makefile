@@ -13,8 +13,8 @@ MAIN_DIR=examples/
 CODE_MAIN=$(MAIN_DIR)readtags.cpp
 OBJ_MAIN=$(MAIN_DIR)readtags.o
 
-LIBTAG_SRC=$(SRC_DIR)libtagpp.cpp
-LIBTAG_OBJ=$(OBJ_DIR)libtagpp.o
+LIBTAG_SRC=$(SRC_DIR)libtagspp.cpp
+LIBTAG_OBJ=$(OBJ_DIR)libtagspp.o
 
 EXE=rtags
 LIB=libtagspp.a
@@ -35,9 +35,9 @@ $(OBJ_MAIN): $(CODE_MAIN)
 	$(CC) -c $< -o $@ -I $(SRC_DIR) $(FLAGS)
 
 
-libtagpp.o: $(LIBTAG_OBJ)
+libtagspp.o: $(LIBTAG_OBJ)
 
-$(LIBTAG_OBJ): $(LIBTAG_SRC) $(SRC_DIR)libtagpp.hpp
+$(LIBTAG_OBJ): $(LIBTAG_SRC) $(SRC_DIR)libtagspp.hpp
 	$(CC) -c $< -o $@ -I $(SRC_DIR) $(FLAGS)
 
 clean:

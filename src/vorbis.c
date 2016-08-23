@@ -107,7 +107,7 @@ tagvorbis(Tagctx *ctx)
 			if(ctx->read(ctx, v, sz) != sz)
 				break;
 			for(; v != nil && v < ctx->buf+sz;){
-				v = memchr(v, 'O', ctx->buf+sz - v - 14);
+				v = (char*) memchr(v, 'O', ctx->buf+sz - v - 14);
 				if(v != nil && v[1] == 'g' && v[2] == 'g' && v[3] == 'S' && (v[5] & 4) == 4){ /* last page */
 					uvlong g = leuint(v+6) | (uvlong)leuint(v+10)<<32;
 					ctx->duration = g * 1000 / ctx->samplerate;

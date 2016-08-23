@@ -2,6 +2,10 @@
 #pragma lib "libtags.a"
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct Tagctx Tagctx;
 typedef int (*Tagread)(void *buf, int *cnt);
 
@@ -76,3 +80,7 @@ struct Tagctx
 
 /* Parse the file using this function. Returns 0 on success. */
 extern int tagsget(Tagctx *ctx);
+
+#ifdef __cplusplus
+}
+#endif

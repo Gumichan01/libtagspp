@@ -71,7 +71,7 @@ rva2(Tagctx *ctx, char *tag, int sz)
 {
 	uchar *b, *end;
 
-	if((b = memchr(tag, 0, sz)) == nil)
+	if((b = (uchar*) memchr(tag, 0, sz)) == nil)
 		return -1;
 	b++;
 	for(end = (uchar*)tag+sz; b+4 < end; b += 5){
@@ -132,7 +132,7 @@ unsyncread(void *buf, int *sz)
 	int i;
 	uchar *b;
 
-	b = buf;
+	b = (uchar*) buf;
 	for(i = 0; i < *sz; i++){
 		if(b[i] == 0xff){
 			if(i+1 >= *sz || (b[i+1] == 0x00 && i+2 >= *sz))
@@ -430,14 +430,14 @@ header:
 	for(exsz = 0; exsz < 2048; exsz += sz){
 		if(ctx->read(ctx, ctx->buf, sz) != sz)
 			break;
-		for(b = (uchar*)ctx->buf; (b = memchr(b, 'I', sz - 1 - ((char*)b - ctx->buf))) != nil; b++){
+		for(b = (uchar*)ctx->buf; (b = (uchar*) memchr(b, 'I', sz - 1 - ((char*)b - ctx->buf))) != nil; b++){
 			ctx->seek(ctx, (char*)b - ctx->buf + offset + exsz, 0);
 			if(ctx->read(ctx, d, sizeof(d)) != sizeof(d))
 				return 0;
 			if(isid3(d))
 				goto header;
 		}
-		if((b = memchr(ctx->buf, 0xff, sz-1)) != nil && (b[1] & 0xe0) == 0xe0){
+		if((b = (uchar*) memchr(ctx->buf, 0xff, sz-1)) != nil && (b[1] & 0xe0) == 0xe0){
 			offset = ctx->seek(ctx, (char*)b - ctx->buf + offset + exsz, 0);
 			break;
 		}

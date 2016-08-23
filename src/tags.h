@@ -1,6 +1,3 @@
-#ifndef __unix__
-#pragma lib "libtags.a"
-#endif
 
 #ifdef __cplusplus
 extern "C" {

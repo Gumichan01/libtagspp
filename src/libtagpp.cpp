@@ -2,6 +2,31 @@
 #include <libtagpp.hpp>
 #include <tags.h>
 
+#include <cstdio>
+
+namespace
+{
+
+struct Aux
+{
+	FILE * f;
+    libtagpp::Tag& tag;
+};
+
+int ctxread(Tagctx *ctx, void *buf, int cnt)
+{
+	Aux *aux = (Aux *) ctx->aux;
+	return fread(buf,1,cnt,aux->f);
+}
+
+int ctxseek(Tagctx *ctx, int offset, int whence)
+{
+	Aux *aux = (Aux *) ctx->aux;
+    fseek(aux->f, offset, whence);
+	return ftell(aux->f);
+}
+
+};
 
 namespace libtagpp
 {
@@ -43,6 +68,54 @@ int Properties::format() const
 /* Tag */
 
 Tag::Tag() {}
+
+void ctxtag(Tagctx *ctx, int t, const char *v, int offset, int size, Tagread f)
+{
+    Aux *aux = (Aux *) ctx->aux;
+
+    switch(t)
+    {
+        case Tartist: aux->tag._artist = v; break;
+        case Talbum: aux->tag._album = v; break;
+        case Ttitle: aux->tag._title = v; break;
+        case Tdate: aux->tag._year = v; break;
+        case Ttrack: aux->tag._track = v; break;
+        case Tgenre: aux->tag._genre = v; break;
+        case Talbumgain: aux->tag._albumgain = v; break;
+        case Talbumpeak: aux->tag._albumpeak = v; break;
+        case Ttrackgain: aux->tag._trackgain = v; break;
+        default: break;
+    }
+}
+
+bool Tag::readTag(const std::string& filename)
+{
+    const char * f = filename.c_str();
+    char buf[256];
+	Aux aux = { NULL, *this };
+	Tagctx ctx = { NULL, ctxread, ctxseek, ctxtag, &aux, buf, sizeof(buf) };
+
+    if((aux.f = fopen(f, "rb")) == NULL)
+    {
+        fprintf(stderr, "failed to open: %s does not exist\n",f);
+        return false;
+    }
+
+    bool success = tagsget(&ctx) == 0;
+    fclose(aux.f);
+    
+    if(success)
+    {
+        _properties._channels   = ctx.channels;
+        _properties._samplerate = ctx.samplerate;
+        _properties._bitrate    = ctx.bitrate;
+        _properties._duration   = ctx.duration;
+        _properties._format     = ctx.format;
+        return true;
+    }
+
+    return false;
+}
 
 Tag::~Tag() {}
 

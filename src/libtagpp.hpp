@@ -4,6 +4,9 @@
 
 #include <string>
 
+struct Tagctx;
+typedef int (*Tagread)(void *buf, int *cnt);
+
 namespace libtagpp
 {
 
@@ -45,6 +48,7 @@ class Tag
     Properties _properties;
 
     Tag(Tag&);
+    friend void ctxtag(Tagctx *ctx, int t, const char *v, int offset, int size, Tagread f);
 
 public:
 

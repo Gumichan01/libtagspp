@@ -11,17 +11,17 @@ struct Aux
 
 static const char *t2s[] =
 {
-	[Tartist] = "Artist",
-	[Talbum] = "Album",
-	[Ttitle] = "Title",
-	[Tdate] = "Date",
-	[Ttrack] = "Track",
-	[Talbumgain] = "Albumgain",
-	[Talbumpeak] = "Albumpeak",
-	[Ttrackgain] = "Trackgain",
-	[Ttrackpeak] = "Trackpeak",
-	[Tgenre] = "Genre",
-	[Timage] = "Image",
+	"Artist",
+	"Album",
+	"Title",
+	"Date",
+	"Track",
+	"Albumgain",
+	"Albumpeak",
+	"Trackgain",
+	"Trackpeak",
+	"Genre",
+	"Image",
 };
 
 static void
@@ -36,14 +36,14 @@ cb(Tagctx *ctx, int t, const char *v, int offset, int size, Tagread f)
 static int
 ctxread(Tagctx *ctx, void *buf, int cnt)
 {
-	Aux *aux = ctx->aux;
+	Aux *aux = (Aux *) ctx->aux;
 	return fread(buf,1,cnt,aux->fd);
 }
 
 static int
 ctxseek(Tagctx *ctx, int offset, int whence)
 {
-	Aux *aux = ctx->aux;
+	Aux *aux = (Aux *) ctx->aux;
     fseek(aux->fd, offset, whence);
 	return ftell(aux->fd);
 }
@@ -56,12 +56,13 @@ main(int argc, char **argv)
 	Aux aux;
 	Tagctx ctx =
 	{
-		.read = ctxread,
-		.seek = ctxseek,
-		.tag = cb,
-		.buf = buf,
-		.bufsz = sizeof(buf),
-		.aux = &aux,
+        NULL,
+		ctxread,
+		ctxseek,
+		cb,
+        &aux,
+		buf,
+		sizeof(buf)
 	};
 
 	if(argc < 2){

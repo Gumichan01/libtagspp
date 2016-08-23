@@ -17,7 +17,7 @@ LIBTAG_SRC=$(SRC_DIR)libtagpp.cpp
 LIBTAG_OBJ=$(OBJ_DIR)libtagpp.o
 
 EXE=rtags
-LIB=libtags.a
+LIB=libtagspp.a
 
 all: $(LIB)
 

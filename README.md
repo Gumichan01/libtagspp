@@ -1,11 +1,11 @@
 libtags++
 =======
 
-A cross-platform library for reading tags.
+A cross-platform library for reading tags, based on [libtags](https://github.com/ftrvxmtrx/libtags).
 
 Comparison to id3lib and taglib:
 
-|                | libtags         | id3lib           | taglib           |
+|                | libtags++       | id3lib           | taglib           |
 |:---------------|:----------------|:-----------------|:-----------------|
 | ID3v2.4        | yes             | no               | yes              |
 | Ogg/Vorbis     | yes             | no               | yes              |

@@ -1,4 +1,7 @@
 
+#ifndef TAGS_H_INCLUDED
+#define TAGS_H_INCLUDED
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -81,3 +84,5 @@ extern int tagsget(Tagctx *ctx);
 #ifdef __cplusplus
 }
 #endif
+
+#endif // TAGS_H_INCLUDED

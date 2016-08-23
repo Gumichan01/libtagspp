@@ -1,18 +1,24 @@
-#ifdef __unix__
-#define _DEFAULT_SOURCE
+
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include <stdlib.h>
-#include <strings.h>
 #define snprint snprintf
-#define cistrcmp strcasecmp
 #define nil NULL
+
+inline int cistrcmp(const char* s1, const char* s2)
+{
+    while (*s1 != '\0' && (toupper(*s1++) == toupper(*s2++)));
+    const char su1 = toupper(*((unsigned char *)--s1));
+    const char su2 = toupper(*((unsigned char *)--s2));
+    return (su1 < su2) ? -1 : (su1 != su2);
+}
+
 typedef unsigned char uchar;
+typedef unsigned short ushort;
+typedef unsigned int uint;
 typedef unsigned long long uvlong;
-#else
-#include <u.h>
-#include <libc.h>
-#endif
+
 #include "tags.h"
 
 enum

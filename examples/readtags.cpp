@@ -28,7 +28,11 @@ int main(int argc, char **argv)
                  << "Track - " << tag.track() << endl
                  << "Genre - " << tag.genre() << endl
                  << " ===============================" << endl
-                 << "Duration - " << tag.properties().duration() << endl;
+                 << "Duration - " << tag.properties().duration() << endl
+                 << "Channels - " << tag.properties().channels() << endl
+                 << "Sample rate - " << tag.properties().samplerate() << endl
+                 << "Bitrate - " << tag.properties().bitrate() << endl
+                 << "Format - " << tag.properties().format() << endl << endl;
         }
         else
             cerr << "Cannot read the tag of the following file: " << endl

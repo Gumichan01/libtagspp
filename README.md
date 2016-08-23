@@ -1,7 +1,7 @@
-libtags
+libtags++
 =======
 
-A cross-platform library for reading tags, designed for highly constrained environments.
+A cross-platform library for reading tags.
 
 Comparison to id3lib and taglib:
 
@@ -15,9 +15,9 @@ Comparison to id3lib and taglib:
 | size           | tiny            | bloated          | more bloated     |
 | license        | MIT             | LGPL             | LGPL/MPL         |
 | written in     | C               | C++              | C++              |
-| memory         | no allocations  | allocates memory | allocates memory |
+| ~~memory~~     | ~~no allocations~~  | ~~allocates memory~~ | ~~allocates memory~~ |
 | thread safe    | yes             | ???              | ???              |
-| speed          | ultra-fast      | slow             | fast             |
+| ~~speed~~      | ~~ultra-fast~~  | ~~slow~~         | ~~fast~~         |
 | tag writing    | no, not a goal  | yes              | yes              |
 | Plan 9 support | yes, native     | no               | no               |
 
@@ -33,9 +33,17 @@ CPU time (784 files: mp3, ogg, flac):
 |                | user    0m0.024s | user    0m0.211s |
 |                | sys     0m0.132s | sys     0m0.187s |
 
-## Usage
+## Example program
 
-Just compile it to an archive (`.a`) and link to your program. Use it in your code
-by including `tags.h`, that's the API. Documentation is in the header.
+**TODO**
 
-See `examples/readtags.c`.
+## Build
+
+### Windows
+
+**TODO**
+
+### Linux/Mac OSX
+
+The library can be compiled using any C++ compiler (g++, clang++).
+You just need to use the makefile.

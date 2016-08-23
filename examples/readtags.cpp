@@ -16,7 +16,7 @@ int main(int argc, char **argv)
 
 	for(int i = 1; i < argc; i++)
     {
-        cout << "*** " << argv[i] << endl;;
+        cout << "*** " << argv[i] << endl;
 
         libtagpp::Tag tag;
         if(tag.readTag(argv[i]))

@@ -1,6 +1,6 @@
 
 
-CC=gcc
+CC=g++
 FLAGS=-Wall -g
 HEADER_DIR=src/
 SRC_DIR=src/
@@ -10,7 +10,7 @@ $(OBJ_DIR)id3v2.o $(OBJ_DIR)m4a.o $(OBJ_DIR)tags.o $(OBJ_DIR)utf16.o \
 $(OBJ_DIR)vorbis.o
 
 MAIN_DIR=examples/
-CODE_MAIN=$(MAIN_DIR)readtags.c
+CODE_MAIN=$(MAIN_DIR)readtags.cpp
 OBJ_MAIN=$(MAIN_DIR)readtags.o
 
 EXE=rtags
@@ -21,7 +21,7 @@ all: $(LIB)
 $(LIB): $(OBJS)
 	ar rcs $@ $^
 
-$(OBJ_DIR)%.o: $(OBJ_SRC)%.c
+$(OBJ_DIR)%.o: $(OBJ_SRC)%.cpp
 	$(CC) -c $< -o $@
 
 

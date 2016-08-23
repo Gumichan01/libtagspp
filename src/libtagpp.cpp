@@ -56,7 +56,7 @@ int Properties::bitrate() const
 
 const char * Properties::duration() const
 {
-    return NULL;
+    return "";
 }
 
 int Properties::format() const
@@ -88,6 +88,7 @@ void ctxtag(Tagctx *ctx, int t, const char *v, int offset, int size, Tagread f)
     }
 }
 
+
 bool Tag::readTag(const std::string& filename)
 {
     const char * f = filename.c_str();
@@ -103,7 +104,7 @@ bool Tag::readTag(const std::string& filename)
 
     bool success = tagsget(&ctx) == 0;
     fclose(aux.f);
-    
+
     if(success)
     {
         _properties._channels   = ctx.channels;
@@ -116,6 +117,63 @@ bool Tag::readTag(const std::string& filename)
 
     return false;
 }
+
+
+const char * Tag::title() const
+{
+    return _title.c_str();
+}
+
+const char * Tag::artist() const
+{
+    return _artist.c_str();
+}
+
+const char * Tag::album() const
+{
+    return _album.c_str();
+}
+
+const char * Tag::year() const
+{
+    return _year.c_str();
+}
+
+const char * Tag::track() const
+{
+    return _track.c_str();
+}
+
+const char * Tag::genre() const
+{
+    return _genre.c_str();
+}
+
+const char * Tag::albumgain() const
+{
+    return _albumgain.c_str();
+}
+
+const char * Tag::albumpeak() const
+{
+    return _albumpeak.c_str();
+}
+
+const char * Tag::trackgain() const
+{
+    return _trackgain.c_str();
+}
+
+const char * Tag::trackpeak() const
+{
+    return _trackpeak.c_str();
+}
+
+const Properties& Tag::properties() const
+{
+    return _properties;
+}
+
 
 Tag::~Tag() {}
 

@@ -39,7 +39,7 @@ Comparison to id3lib and taglib:
 
 ### Windows
 
-**TODO**
+You can just use the codeblocks project file to generate the library and test the program
 
 ### Linux/Mac OSX
 

@@ -2,6 +2,7 @@
 #include <libtagpp.hpp>
 #include <tags.h>
 
+#include <sstream>
 #include <cstdio>
 
 namespace
@@ -34,10 +35,7 @@ namespace libtagpp
 /* Properties */
 
 Properties::Properties()
-: _channels(0), _samplerate(0), _bitrate(0), _duration(0), _format(0) {}
-
-Properties::~Properties() {}
-
+    : _channels(0), _samplerate(0), _bitrate(0), _duration(0), _format(0) {}
 
 int Properties::channels() const
 {
@@ -56,7 +54,40 @@ int Properties::bitrate() const
 
 const char * Properties::duration() const
 {
-    return "";
+    std::ostringstream ss;
+    const int H_MINUTE = 60;
+    const int M_SECOND = 60;
+    const int d = _duration / 1000;
+    int hour, minute, second;
+
+    hour = 0;
+    minute = 0;
+    second = 0;
+
+    if(d > M_SECOND)
+    {
+        minute = d / M_SECOND;
+        second = d % M_SECOND;
+
+        if(minute > H_MINUTE)
+        {
+            hour = minute / H_MINUTE;
+            minute = minute % H_MINUTE;
+        }
+    }
+    else
+        second = d;
+
+    if(hour > 0)
+        ss << hour << ":" << minute << ":" << second;
+    else if(minute > 0)
+    {
+        ss << minute << ":" << second;
+    }
+    else
+        ss << second << "s";
+
+    return ss.str().c_str();
 }
 
 int Properties::format() const
@@ -64,6 +95,7 @@ int Properties::format() const
     return _format;
 }
 
+Properties::~Properties() {}
 
 /* Tag */
 
@@ -173,7 +205,6 @@ const Properties& Tag::properties() const
 {
     return _properties;
 }
-
 
 Tag::~Tag() {}
 

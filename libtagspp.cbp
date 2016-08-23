@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="libtagspp" />
+		<Option platforms="Windows;" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option platforms="Windows;" />
+				<Option output="bin/Debug/libtagspp" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option platforms="Windows;" />
+				<Option output="bin/Release/tagspp" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj/Release/" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-w" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+			<Add directory="src" />
+		</Compiler>
+		<Unit filename="examples/readtags.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="src/8859.cpp" />
+		<Unit filename="src/flac.cpp" />
+		<Unit filename="src/id3genres.cpp" />
+		<Unit filename="src/id3v1.cpp" />
+		<Unit filename="src/id3v2.cpp" />
+		<Unit filename="src/libtagspp.cpp" />
+		<Unit filename="src/libtagspp.hpp" />
+		<Unit filename="src/m4a.cpp" />
+		<Unit filename="src/tags.cpp" />
+		<Unit filename="src/tags.h" />
+		<Unit filename="src/tagspriv.h" />
+		<Unit filename="src/utf16.cpp" />
+		<Unit filename="src/vorbis.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

@@ -27,6 +27,16 @@ int ctxseek(Tagctx *ctx, int offset, int whence)
 	return ftell(aux->f);
 }
 
+inline const char * sec_(int second)
+{
+    return second < 10 ? "0":"";
+}
+
+inline const char * minute_(int minute)
+{
+    return minute < 10 ? "0":"";
+}
+
 };
 
 namespace libtagpp
@@ -79,10 +89,10 @@ const char * Properties::duration() const
         second = d;
 
     if(hour > 0)
-        ss << hour << ":" << minute << ":" << second;
+        ss << hour << ":" << minute_(minute) << minute << ":" << sec_(second) << second;
     else if(minute > 0)
     {
-        ss << minute << ":" << second;
+        ss << minute << ":" << sec_(second) << second;
     }
     else
         ss << second << "s";

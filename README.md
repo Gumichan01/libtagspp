@@ -30,7 +30,7 @@ Comparison to id3lib and taglib:
              << "Artist - " << tag.artist() << endl                     // Comptroller
              << "Album - " << tag.album() << endl                       // Baddies
              << " ===============================" << endl
-             << "Duration - " << tag.properties().duration() << endl    // Electronic
+             << "Duration - " << tag.properties().duration() << endl    // 2:29
     }
     else
         cerr << "Cannot read the tag" << endl;

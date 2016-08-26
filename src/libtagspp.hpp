@@ -2,14 +2,22 @@
 #ifndef TAGS_HPP_INCLUDED
 #define TAGS_HPP_INCLUDED
 
+/**
+*    @file libtagspp.hpp
+*    @brief The metadata reader API
+*    @author Luxon Jean-Pierre(Gumichan01)
+*
+*/
+
 #include <string>
 
 struct Tagctx;
 typedef int (*Tagread)(void *buf, int *cnt);
 
+
 /**
 *   @namespace libtagpp
-*   @brief The metadata reader API
+*   @brief The metadata reader namespace
 */
 namespace libtagpp
 {

@@ -23,7 +23,7 @@ typedef unsigned long long uvlong;
 
 enum
 {
-	Numgenre = 192,
+    Numgenre = 192,
 };
 
 extern const char *id3genres[Numgenre];

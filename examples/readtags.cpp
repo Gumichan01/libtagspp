@@ -8,13 +8,13 @@ using namespace std;
 int main(int argc, char **argv)
 {
 
-	if(argc < 2)
+    if(argc < 2)
     {
-		cout << "usage: readtags FILE..." << endl;;
-		return -1;
-	}
+        cout << "usage: readtags FILE..." << endl;;
+        return -1;
+    }
 
-	for(int i = 1; i < argc; i++)
+    for(int i = 1; i < argc; i++)
     {
         cout << "*** " << argv[i] << endl;
 
@@ -38,6 +38,6 @@ int main(int argc, char **argv)
             cerr << "Cannot read the tag of the following file: " << endl
                  << "--- " << argv[1] << endl;
 
-	}
-	return 0;
+    }
+    return 0;
 }

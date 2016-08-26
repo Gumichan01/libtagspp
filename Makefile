@@ -18,6 +18,7 @@ LIBTAG_OBJ=$(OBJ_DIR)libtagspp.o
 
 EXE=rtags
 LIB=libtagspp.a
+DOXY_FILE=Doxyfile
 
 all: $(LIB)
 
@@ -39,6 +40,11 @@ libtagspp.o: $(LIBTAG_OBJ)
 
 $(LIBTAG_OBJ): $(LIBTAG_SRC) $(SRC_DIR)libtagspp.hpp
 	$(CC) -c $< -o $@ -I $(SRC_DIR) $(FLAGS)
+
+
+documentation : $(DOXY_FILE)
+	@echo "Generating the doxygen file from "$<
+	@doxygen $<
 
 clean:
 	rm -rf $(OBJ_DIR)*.o

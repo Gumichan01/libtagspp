@@ -62,7 +62,7 @@ int Properties::bitrate() const
     return _bitrate;
 }
 
-const char * Properties::duration() const
+std::string Properties::duration() const
 {
     std::ostringstream ss;
     const int H_MINUTE = 60;
@@ -95,7 +95,7 @@ const char * Properties::duration() const
     else
         ss << second << "s";
 
-    return ss.str().c_str();
+    return ss.str();
 }
 
 int Properties::format() const

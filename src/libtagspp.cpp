@@ -62,7 +62,7 @@ int Properties::bitrate() const
     return _bitrate;
 }
 
-const char * Properties::duration() const
+std::string Properties::duration() const
 {
     std::ostringstream ss;
     const int H_MINUTE = 60;
@@ -95,7 +95,7 @@ const char * Properties::duration() const
     else
         ss << second << "s";
 
-    return ss.str().c_str();
+    return ss.str();
 }
 
 int Properties::format() const
@@ -155,8 +155,8 @@ bool Tag::readTag(const std::string& filename)
 {
     const char * f = filename.c_str();
     char buf[256];
-    Aux aux = {NULL, *this};
-    Tagctx ctx = {NULL, ctxread, ctxseek, ctxtag, &aux, buf, sizeof(buf),0,0,0,0,0};
+    Aux aux = { NULL, *this };
+    Tagctx ctx = { NULL, ctxread, ctxseek, ctxtag, &aux, buf, sizeof(buf),0,0,0,0,0};
 
     if((aux.f = fopen(f, "rb")) == NULL)
     {

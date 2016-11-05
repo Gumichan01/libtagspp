@@ -37,37 +37,12 @@ inline const char * minute_(int minute)
     return minute < 10 ? "0":"";
 }
 
-};
-
-namespace libtagpp
-{
-
-/* Properties */
-
-Properties::Properties()
-    : _channels(0), _samplerate(0), _bitrate(0), _duration(0), _format(0) {}
-
-int Properties::channels() const
-{
-    return _channels;
-}
-
-int Properties::samplerate() const
-{
-    return _samplerate;
-}
-
-int Properties::bitrate() const
-{
-    return _bitrate;
-}
-
-std::string Properties::duration() const
+std::string duration(int t)
 {
     std::ostringstream ss;
     const int H_MINUTE = 60;
     const int M_SECOND = 60;
-    const int d = _duration / 1000;
+    const int d = t / 1000;
     int hour, minute, second;
 
     hour = 0;
@@ -98,15 +73,20 @@ std::string Properties::duration() const
     return ss.str();
 }
 
-int Properties::format() const
+};
+
+namespace libtagpp
 {
-    return _format;
-}
 
-Properties::~Properties() {}
+/* Properties */
+
+Properties::Properties()
+    : channels(0), samplerate(0), bitrate(0), duration(""), format(0) {}
 
 
-// Friend function
+/* Tag */
+
+// (Tag) Friend function
 void ctxtag(Tagctx *ctx, int t, const char *v, int offset, int size, Tagread f)
 {
     Aux *aux = (Aux *) ctx->aux;
@@ -151,8 +131,6 @@ void ctxtag(Tagctx *ctx, int t, const char *v, int offset, int size, Tagread f)
 }
 
 
-/* Tag */
-
 Tag::Tag() {}
 
 
@@ -176,11 +154,11 @@ bool Tag::readTag(const std::string& filename)
 
     if(success)
     {
-        _properties._channels   = ctx.channels;
-        _properties._samplerate = ctx.samplerate;
-        _properties._bitrate    = ctx.bitrate;
-        _properties._duration   = ctx.duration;
-        _properties._format     = ctx.format;
+        _properties.channels   = ctx.channels;
+        _properties.samplerate = ctx.samplerate;
+        _properties.bitrate    = ctx.bitrate;
+        _properties.duration   = duration(ctx.duration);
+        _properties.format     = ctx.format;
         return true;
     }
 
@@ -247,7 +225,5 @@ const Properties& Tag::properties() const
 {
     return _properties;
 }
-
-//Tag::~Tag() = default;
 
 };

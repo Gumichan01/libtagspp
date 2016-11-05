@@ -28,55 +28,16 @@ class Tag;
 *   @class Properties
 *   @brief Set of music properties (duration, format, ...)
 */
-class Properties
+struct Properties
 {
-    friend class Tag;
-    int _channels;
-    int _samplerate;
-    int _bitrate;
-    int _duration;
-    int _format;
+    int channels;
+    int samplerate;
+    int bitrate;
+    std::string duration;
+    int format;
 
-public:
-
-    /// Constructor
     Properties();
-    /**
-    *   @fn int channels() const
-    *   Get the number of channels
-    *   @return The number of channels, 0 if it is not defined
-    */
-    int channels() const;
-    /**
-    *   @fn int samplerate() const
-    *   Get the sample rate
-    *   @return The sample rate in Hz, 0 if it is not defined
-    */
-    int samplerate() const;
-    /**
-    *   @fn int bitrate() const
-    *   Get the bit rate
-    *   @return The bit rate in bit.s⁻¹ (bit/s), 0 if it is not defined
-    */
-    int bitrate() const;
-    /**
-    *   @fn std::string duration() const
-    *   Get the duration of the music
-    *   @return A string representing the duration, "0" if it is not defined
-    */
-    std::string duration() const;
-    /**
-    *   @fn int format() const
-    *   Get the format of the music
-    *   @return The format. It has on of the following values:
-    *           - Fmp3: MP3 format
-    *           - Fogg: OGG Vorbis format
-    *           - Fflac: FLAC format
-    *           - Fm4a: M4A format. See: http://www.wikiwand.com/en/Advanced_Audio_Coding
-    */
-    int format() const;
-    /// Destructor
-    ~Properties();
+    ~Properties() = default;
 };
 
 

@@ -27,12 +27,14 @@ int main(int argc, char **argv)
                  << "Year - " << tag.year() << endl
                  << "Track - " << tag.track() << endl
                  << "Genre - " << tag.genre() << endl
+                 << "Image metadata - offset: " << tag.getImageMetaData()._img_offset
+                 << "; size: " << tag.getImageMetaData()._img_size << endl
                  << " ===============================" << endl
-                 << "Duration - " << tag.properties().duration() << endl
-                 << "Channels - " << tag.properties().channels() << endl
-                 << "Sample rate - " << tag.properties().samplerate() << endl
-                 << "Bitrate - " << tag.properties().bitrate() << endl
-                 << "Format - " << tag.properties().format() << endl << endl;
+                 << "Duration - " << tag.properties().duration << endl
+                 << "Channels - " << tag.properties().channels << endl
+                 << "Sample rate - " << tag.properties().samplerate << endl
+                 << "Bitrate - " << tag.properties().bitrate << endl
+                 << "Format - " << tag.properties().format << endl << endl;
         }
         else
             cerr << "Cannot read the tag of the following file: " << endl

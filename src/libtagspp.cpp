@@ -16,13 +16,13 @@ struct Aux
 
 int ctxread(Tagctx *ctx, void *buf, int cnt)
 {
-    Aux *aux = (Aux *) ctx->aux;
+    Aux *aux = static_cast<Aux *>(ctx->aux);
     return static_cast<int>(fread(buf,1,static_cast<size_t>(cnt),aux->f));
 }
 
 int ctxseek(Tagctx *ctx, int offset, int whence)
 {
-    Aux *aux = (Aux *) ctx->aux;
+    Aux *aux = static_cast<Aux *>(ctx->aux);
     fseek(aux->f, offset, whence);
     return static_cast<int>(ftell(aux->f));
 }

@@ -80,6 +80,12 @@ public:
 };
 
 
+struct ImgMetaData
+{
+    int _img_offset;
+    int _img_size;
+};
+
 /**
 *   @class Tag
 *   @brief Metadata of the music
@@ -96,6 +102,7 @@ class Tag
     std::string _albumpeak;
     std::string _trackgain;
     std::string _trackpeak;
+    ImgMetaData _imdata;
     Properties _properties;
 
     Tag(Tag&);
@@ -112,7 +119,6 @@ public:
     *   Read the metadata of the music given in argument
     *
     *   @param [in] filename The name of the music file
-    *
     *   @return TRUE on success, and metadat are set, FALSE otherwise
     */
     bool readTag(const std::string& filename);
@@ -136,11 +142,13 @@ public:
     const char * trackgain() const;
     /// Get the track peak
     const char * trackpeak() const;
+    /// Get meta data about the location of the image
+    const ImgMetaData& getImageMetaData() const;
     /// Get the music properties
     const Properties& properties() const;
 
     /// Destructor
-    ~Tag();
+    ~Tag() = default;
 };
 
 };

@@ -140,6 +140,11 @@ void ctxtag(Tagctx *ctx, int t, const char *v, int offset, int size, Tagread f)
     case Ttrackgain:
         aux->tag._trackgain = v;
         break;
+
+    case Timage:
+        aux->tag._imdata._img_offset = offset;
+        aux->tag._imdata._img_size = size;
+        break;
     default:
         break;
     }
@@ -156,7 +161,9 @@ bool Tag::readTag(const std::string& filename)
     const char * f = filename.c_str();
     char buf[256];
     Aux aux = { NULL, *this };
-    Tagctx ctx = { NULL, ctxread, ctxseek, ctxtag, &aux, buf, sizeof(buf),0,0,0,0,0};
+    Tagctx ctx = { NULL, ctxread, ctxseek, ctxtag, &aux, buf, sizeof(buf),
+                   0, 0, 0, 0, 0, 0, 0
+                 };
 
     if((aux.f = fopen(f, "rb")) == NULL)
     {
@@ -231,11 +238,16 @@ const char * Tag::trackpeak() const
     return _trackpeak.c_str();
 }
 
+const ImgMetaData& Tag::getImageMetaData() const
+{
+    return _imdata;
+}
+
 const Properties& Tag::properties() const
 {
     return _properties;
 }
 
-Tag::~Tag() {}
+//Tag::~Tag() = default;
 
 };

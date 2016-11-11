@@ -27,20 +27,15 @@ $(LIB): $(OBJS) $(LIBTAG_OBJ)
 
 
 $(EXE): $(OBJ_MAIN) $(OBJS) $(LIBTAG_OBJ)
-	@echo "exec"
 	$(CC) $^ -o $@ $(FLAGS)
 
 $(OBJ_MAIN): $(CODE_MAIN)
-	@echo "libtag++ MAIN"
 	$(CC) -c $< -o $@ -I $(SRC_DIR) $(FLAGS)
-	@echo "libtag++ OK"
 
 
 libtagspp.o: $(LIBTAG_OBJ)
-	@echo "libtag++ OK"
 
 $(LIBTAG_OBJ): $(LIBTAG_SRC) $(SRC_DIR)libtagspp.hpp
-	@echo "libtag++ compile"
 	$(CC) -c $< -o $@ -I $(SRC_DIR) $(FLAGS)
 
 %.o: %.cpp

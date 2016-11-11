@@ -107,7 +107,7 @@ namespace libtagpp
 /* Properties */
 
 Properties::Properties()
-    : channels(0), samplerate(0), bitrate(0), duration(""), format(0) {}
+    : channels(0), samplerate(0), bitrate(0), duration(""), format("") {}
 
 
 /* Tag */

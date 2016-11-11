@@ -1,7 +1,7 @@
 
 
 CC=g++
-FLAGS=-Wall -g
+FLAGS=-Wall -g -std=c++0x
 HEADER_DIR=src/
 SRC_DIR=src/
 OBJ_DIR=src/
@@ -25,22 +25,26 @@ all: $(LIB)
 $(LIB): $(OBJS) $(LIBTAG_OBJ)
 	ar rcs $@ $^
 
-$(OBJ_DIR)%.o: $(OBJ_SRC)%.cpp
-	$(CC) -c $< -o $@ $(FLAGS)
-
 
 $(EXE): $(OBJ_MAIN) $(OBJS) $(LIBTAG_OBJ)
+	@echo "exec"
 	$(CC) $^ -o $@ $(FLAGS)
 
 $(OBJ_MAIN): $(CODE_MAIN)
+	@echo "libtag++ MAIN"
 	$(CC) -c $< -o $@ -I $(SRC_DIR) $(FLAGS)
+	@echo "libtag++ OK"
 
 
 libtagspp.o: $(LIBTAG_OBJ)
+	@echo "libtag++ OK"
 
 $(LIBTAG_OBJ): $(LIBTAG_SRC) $(SRC_DIR)libtagspp.hpp
+	@echo "libtag++ compile"
 	$(CC) -c $< -o $@ -I $(SRC_DIR) $(FLAGS)
 
+%.o: %.cpp
+	$(CC) -c $< -o $@ $(FLAGS)
 
 documentation : $(DOXY_FILE)
 	@echo "Generating the doxygen file from "$<

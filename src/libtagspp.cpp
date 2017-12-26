@@ -8,6 +8,8 @@
 namespace
 {
 
+#define EMPTY_IMG {0,0}
+
 struct Aux
 {
     FILE * f;
@@ -157,7 +159,7 @@ void ctxtag(Tagctx *ctx, int t, const char *v, int offset, int size, Tagread)
 }
 
 
-Tag::Tag(): _imdata({0,0}) {}
+Tag::Tag(): _imdata(EMPTY_IMG) {}
 
 
 bool Tag::readTag(const std::string& filename)

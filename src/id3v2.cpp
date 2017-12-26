@@ -282,7 +282,7 @@ static int text(Tagctx *ctx, uchar *d, int tsz, int unsync)
 
     default:    /* Unknown format */
         return -1;
-    break;
+        break;
     }
 
     return 0;

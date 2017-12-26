@@ -14,7 +14,7 @@ Comparison to id3lib and taglib:
 | FLAC           | yes             | no               | yes                         |
 | m4a            | yes             | no               | yes                         |
 | replay gain    | yes             | no               | ???                         |
-| size           | tiny (~60 KB)   | bloated?         | more bloated (~2 MB, v1.11) |
+| size           | tiny (~40 KB)   | bloated?         | more bloated (~2 MB, v1.11) |
 | license        | MIT             | LGPL             | LGPL/MPL                    |
 | written in     | C++             | C++              | C++                         |
 | memory         | no allocations  | allocates memory | allocates memory            |

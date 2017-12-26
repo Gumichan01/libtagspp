@@ -69,14 +69,17 @@ class Tag
     ImgMetaData _imdata;
     Properties _properties;
 
-    Tag(Tag&);
-    Tag& operator =(const Tag&);
     friend void ctxtag(Tagctx *ctx, int t, const char *v, int offset, int size, Tagread);
 
 public:
 
     /// Constructor
     Tag();
+
+    Tag(Tag&) = delete;
+    Tag(Tag&&) = delete;
+    Tag& operator =(const Tag&) = delete;
+    Tag&& operator =(const Tag&&) = delete;
 
     /**
     *   @fn bool readTag(const std::string& filename)

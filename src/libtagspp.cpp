@@ -17,7 +17,7 @@ struct Aux
 int ctxread(Tagctx *ctx, void *buf, int cnt)
 {
     Aux *aux = static_cast<Aux *>(ctx->aux);
-    return static_cast<int>(fread(buf,1,static_cast<size_t>(cnt),aux->f));
+    return static_cast<int>(fread(buf, 1, static_cast<size_t>(cnt), aux->f));
 }
 
 int ctxseek(Tagctx *ctx, int offset, int whence)
@@ -99,7 +99,7 @@ std::string format(int f)
     return s;
 }
 
-}
+}   // Anonymous namespace
 
 namespace libtagpp
 {

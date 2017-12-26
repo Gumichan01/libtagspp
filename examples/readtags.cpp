@@ -37,9 +37,11 @@ int main(int argc, char **argv)
                  << "Format - " << tag.properties().format << endl << endl;
         }
         else
+        {
             cerr << "Cannot read the tag of the following file: " << endl
                  << "--- " << argv[1] << endl;
-
+            return -1;
+        }
     }
     return 0;
 }

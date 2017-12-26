@@ -1,6 +1,8 @@
 libtags++
 =======
 
+[![Build Status](https://travis-ci.org/Gumichan01/libtagspp.svg?branch=master)](https://travis-ci.org/Gumichan01/libtagspp)
+
 A cross-platform library for reading tags, based on [libtags](https://github.com/ftrvxmtrx/libtags).
 
 Comparison to id3lib and taglib:

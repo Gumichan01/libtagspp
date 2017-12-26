@@ -113,7 +113,7 @@ Properties::Properties()
 /* Tag */
 
 // (Tag) Friend function
-void ctxtag(Tagctx *ctx, int t, const char *v, int offset, int size, Tagread f)
+void ctxtag(Tagctx *ctx, int t, const char *v, int offset, int size, Tagread)
 {
     Aux *aux = (Aux *) ctx->aux;
 

@@ -17,5 +17,4 @@ install:
 script:
   - make
   - make rtags
-  - ./rtags data/gumichan01-eastern_wind.ogg
-  - ./rtags data/gumichan01-eastern_wind.mp3
+  - ./rtags data/gumichan01-eastern_wind.ogg data/gumichan01-eastern_wind.mp3

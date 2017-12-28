@@ -45,8 +45,8 @@ documentation : $(DOXY_FILE)
 	@echo "Generating the doxygen file from "$<
 	@doxygen $<
 
-clean:
+clear:
 	rm -rf $(OBJ_DIR)*.o
 
-clear:
+mrproper:
 	rm -rf $(OBJ_DIR)*.o $(EXE) $(OBJ_MAIN) $(LIB)

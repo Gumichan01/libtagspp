@@ -1,7 +1,7 @@
 
 
 CC=g++
-FLAGS=-Wall -g -std=c++11
+FLAGS=-Wall -Wextra -Weffc++ -g -std=c++11
 HEADER_DIR=src/
 SRC_DIR=src/
 OBJ_DIR=src/

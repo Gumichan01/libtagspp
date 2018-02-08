@@ -6,7 +6,6 @@
 *    @file libtagspp.hpp
 *    @brief The metadata reader API
 *    @author Luxon Jean-Pierre(Gumichan01)
-*
 */
 
 #include <string>

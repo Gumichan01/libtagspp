@@ -159,7 +159,9 @@ void ctxtag(Tagctx *ctx, int t, const char *v, int offset, int size, Tagread)
 }
 
 
-Tag::Tag(): _imdata(EMPTY_IMG) {}
+Tag::Tag(): _title(), _artist(), _album(), _year(), _track(), _genre(),
+    _albumgain(), _albumpeak(), _trackgain(), _trackpeak(),
+    _imdata(EMPTY_IMG), _properties() {}
 
 
 bool Tag::readTag(const std::string& filename)

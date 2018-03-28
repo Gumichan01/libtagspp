@@ -24,10 +24,10 @@ namespace libtagpp
 class Tag;
 
 /**
-*   @class Properties
+*   @class Properties final
 *   @brief Set of music properties (duration, format, ...)
 */
-struct Properties
+struct Properties final
 {
     int channels;           /**< Number of audio channels       */
     int samplerate;         /**< Sample rate (in Hz)            */
@@ -40,20 +40,20 @@ struct Properties
 };
 
 /**
-*   @struct ImgMetaData
+*   @struct ImgMetaData final
 *   @brief Information about an image
 */
-struct ImgMetaData
+struct ImgMetaData final
 {
     int _img_offset;    /**< Beginning of image data in the file */
     int _img_size;      /**< Size of data */
 };
 
 /**
-*   @class Tag
+*   @class Tag final
 *   @brief Metadata of the music
 */
-class Tag
+class Tag final
 {
     std::string _title;
     std::string _artist;

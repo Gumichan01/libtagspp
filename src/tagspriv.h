@@ -1,16 +1,16 @@
 
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
-#define snprint snprintf
+#include <cstdio>
+#include <cstring>
+#include <cctype>
+#include <cstdlib>
+#define snprint std::snprintf
 #define nil NULL
 
 inline int cistrcmp(const char* s1, const char* s2)
 {
-    while (*s1 != '\0' && (toupper(*s1++) == toupper(*s2++)));
-    const char su1 = toupper(*((unsigned char *)--s1));
-    const char su2 = toupper(*((unsigned char *)--s2));
+    while (*s1 != '\0' && (std::toupper(*s1++) == toupper(*s2++)));
+    const char su1 = std::toupper(*((unsigned char *)--s1));
+    const char su2 = std::toupper(*((unsigned char *)--s2));
     return (su1 < su2) ? -1 : (su1 != su2);
 }
 

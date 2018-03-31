@@ -47,7 +47,7 @@ int tagvorbis(Tagctx *ctx)
         int nsegs;
         if(ctx->read(ctx, d, 27) != 27)
             return -1;
-        if(memcmp(d, "OggS", 4) != 0)
+        if(std::memcmp(d, "OggS", 4) != 0)
             return -1;
 
         /* calculate the size of the packet */
@@ -72,7 +72,7 @@ int tagvorbis(Tagctx *ctx)
         ctx->seek(ctx, sz-1, 1);
     }
 
-    if(ctx->read(ctx, &d[1], 10) != 10 || memcmp(&d[1], "vorbis", 6) != 0)
+    if(ctx->read(ctx, &d[1], 10) != 10 || std::memcmp(&d[1], "vorbis", 6) != 0)
         return -1;
     sz = leuint(&d[7]);
     if(ctx->seek(ctx, sz, 1) < 0 || ctx->read(ctx, h, 4) != 4)
@@ -115,7 +115,7 @@ int tagvorbis(Tagctx *ctx)
                 break;
             for(; v != nil && v < ctx->buf+sz;)
             {
-                v = (char*) memchr(v, 'O', ctx->buf+sz - v - 14);
+                v = (char*) std::memchr(v, 'O', ctx->buf+sz - v - 14);
                 if(v != nil && v[1] == 'g' && v[2] == 'g' && v[3] == 'S' && (v[5] & 4) == 4)  /* last page */
                 {
                     uvlong g = leuint(v+6) | (uvlong)leuint(v+10)<<32;

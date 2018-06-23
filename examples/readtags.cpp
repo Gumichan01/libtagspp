@@ -5,21 +5,21 @@
 using namespace std;
 
 
-int main(int argc, char **argv)
+int main( int argc, char ** argv )
 {
 
-    if(argc < 2)
+    if ( argc < 2 )
     {
         cout << "usage: readtags FILE..." << endl;;
         return -1;
     }
 
-    for(int i = 1; i < argc; i++)
+    for ( int i = 1; i < argc; i++ )
     {
         cout << "*** " << argv[i] << endl;
 
         libtagpp::Tag tag;
-        if(tag.readTag(argv[i]))
+        if ( tag.readTag( argv[i] ) )
         {
             cout << "Title - " << tag.title() << endl
                  << "Artist - " << tag.artist() << endl

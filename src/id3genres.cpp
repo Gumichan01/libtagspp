@@ -1,6 +1,6 @@
 #include "tagspriv.h"
 
-const char *id3genres[Numgenre] =
+const char * id3genres[Numgenre] =
 {
     "Blues", "Classic Rock", "Country", "Dance", "Disco", "Funk",
     "Grunge", "Hip-Hop", "Jazz", "Metal", "New Age", "Oldies",

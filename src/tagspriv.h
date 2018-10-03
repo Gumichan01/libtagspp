@@ -4,14 +4,20 @@
 #include <cctype>
 #include <cstdlib>
 #define snprint std::snprintf
-#define nil NULL
+#define nil nullptr
 
 inline int cistrcmp( const char * s1, const char * s2 )
 {
     while ( *s1 != '\0' && ( std::toupper( *s1++ ) == toupper( *s2++ ) ) );
-    const char su1 = std::toupper( *( ( unsigned char * )--s1 ) );
-    const char su2 = std::toupper( *( ( unsigned char * )--s2 ) );
+    const char su1 = static_cast<char>( std::toupper( *( ( unsigned char * )--s1 ) ) );
+    const char su2 = static_cast<char>( std::toupper( *( ( unsigned char * )--s2 ) ) );
     return ( su1 < su2 ) ? -1 : ( su1 != su2 );
+}
+
+template <typename T>
+inline constexpr int leuint( T * d ) noexcept
+{
+    return static_cast<int>( d[3] << 24 | d[2] << 16 | d[1] <<  8 | d[0] <<  0 );
 }
 
 typedef unsigned char uchar;
@@ -52,4 +58,4 @@ void cbvorbiscomment( Tagctx * ctx, char * k, char * v );
 
 void tagscallcb( Tagctx * ctx, int type, const char * s, int offset, int size, Tagread f );
 
-#define txtcb(ctx, type, s) tagscallcb(ctx, type, (const char*)s, 0, 0, nil)
+#define txtcb(ctx, type, s) tagscallcb(ctx, type, s, 0, 0, nil)

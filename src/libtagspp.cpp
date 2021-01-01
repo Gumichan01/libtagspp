@@ -81,17 +81,26 @@ std::string format( int f )
 
     switch ( f )
     {
-    case 0:
+    case Fmp3:
         s = "MP3";
         break;
-    case 1:
+    case Fogg:
         s = "OGG Vorbis";
         break;
-    case 2:
+    case Fflac:
         s = "FLAC";
         break;
-    case 3:
+    case Fm4a:
         s = "M4A";
+        break;
+    case Fopus:
+        s = "OPUS";
+        break;
+    case Fwav:
+        s = "WAV";
+        break;
+    case Fit:
+        s = "Impulse Tracker";
         break;
     default:
         s = "UNKNOWN";

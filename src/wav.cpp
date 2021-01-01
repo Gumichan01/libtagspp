@@ -1,7 +1,7 @@
 #include "tagspriv.h"
 
 #define le16u(d) (u16int)((d)[0] | (d)[1]<<8)
-#define N 6
+#define N 8
 
 static struct
 {
@@ -14,8 +14,12 @@ static struct
     {"IGNR", Tgenre},
     {"INAM", Ttitle},
     {"IPRD", Talbum},
-    {"ITRK", Ttrack}
+    {"ITRK", Ttrack},
+    {"ICMT", Tunknown},
+    {"ISFT", Tunknown}
 };
+
+int extractmdata( Tagctx * ctx, uchar * buffer );
 
 int
 tagwav( Tagctx * ctx )
@@ -74,13 +78,8 @@ tagwav( Tagctx * ctx )
             sz = csz - 4;
             continue;
         }
-        else if ( memcmp( d, "data", 4 ) == 0 )
-        {
-            break;
-        }
         else if ( info )
         {
-            csz++;
             for ( n = 0; n < N; n++ )
             {
                 if ( memcmp( d, t[n].s, 4 ) == 0 )
@@ -93,6 +92,7 @@ tagwav( Tagctx * ctx )
                     break;
                 }
             }
+            return extractmdata( ctx, d );
         }
 
         if ( ctx->seek( ctx, csz, 1 ) < 0 )
@@ -100,4 +100,36 @@ tagwav( Tagctx * ctx )
     }
 
     return i > 0 ? 0 : -1;
+}
+
+int
+extractmdata( Tagctx * ctx, uchar * buffer )
+{
+    const u32int FOUR_CC = 4;
+
+    memset( buffer, 0, ctx->bufsz );
+    while ( ctx->read( ctx, buffer, FOUR_CC ) == FOUR_CC )
+    {
+        int n = 0;
+        u32int csz = 0;
+        while ( n < N &&  csz == 0 )
+        {
+            if ( memcmp( buffer, t[n].s, FOUR_CC ) == 0 )
+            {
+                if ( ctx->read( ctx, &csz, sizeof( u32int ) ) != sizeof( u32int ) )
+                    return -1;
+
+                if ( ctx->read( ctx, buffer, csz ) != csz )
+                    return -1;
+
+                buffer[csz - 1] = 0;
+                if ( t[n].type != Tunknown )
+                    txtcb( ctx, t[n].type, "", buffer );
+            }
+            n++;
+        }
+        memset( buffer, 0, csz );
+        csz = 0;
+    }
+    return 0;
 }

@@ -50,14 +50,17 @@
 		<Unit filename="src/id3genres.cpp" />
 		<Unit filename="src/id3v1.cpp" />
 		<Unit filename="src/id3v2.cpp" />
+		<Unit filename="src/it.cpp" />
 		<Unit filename="src/libtagspp.cpp" />
 		<Unit filename="src/libtagspp.hpp" />
 		<Unit filename="src/m4a.cpp" />
+		<Unit filename="src/opus.cpp" />
 		<Unit filename="src/tags.cpp" />
 		<Unit filename="src/tags.h" />
 		<Unit filename="src/tagspriv.h" />
 		<Unit filename="src/utf16.cpp" />
 		<Unit filename="src/vorbis.cpp" />
+		<Unit filename="src/wav.cpp" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

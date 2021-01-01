@@ -124,7 +124,7 @@ Properties::Properties()
 /* Tag */
 
 // (Tag) Friend function
-void ctxtag( Tagctx * ctx, int t, const char *k, const char * v, int offset, int size, Tagread )
+void ctxtag( Tagctx * ctx, int t, const char * k, const char * v, int offset, int size, Tagread )
 {
     Aux * aux = static_cast<Aux *>( ctx->aux );
 

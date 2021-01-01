@@ -7,7 +7,7 @@ SRC_DIR=src/
 OBJ_DIR=src/
 OBJS=$(OBJ_DIR)8859.o $(OBJ_DIR)flac.o $(OBJ_DIR)id3genres.o $(OBJ_DIR)id3v1.o \
 $(OBJ_DIR)id3v2.o $(OBJ_DIR)m4a.o $(OBJ_DIR)tags.o $(OBJ_DIR)utf16.o \
-$(OBJ_DIR)vorbis.o
+$(OBJ_DIR)vorbis.o $(OBJ_DIR)opus.o $(OBJ_DIR)wav.o $(OBJ_DIR)it.o
 
 MAIN_DIR=examples/
 CODE_MAIN=$(MAIN_DIR)readtags.cpp

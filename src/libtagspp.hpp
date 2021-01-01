@@ -68,7 +68,7 @@ class Tag final
     ImgMetaData _imdata;
     Properties _properties;
 
-    friend void ctxtag( Tagctx * ctx, int t, const char * v, int offset, int size, Tagread );
+    friend void ctxtag( Tagctx * ctx, int t, const char *k, const char * v, int offset, int size, Tagread );
 
 public:
 

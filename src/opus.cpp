@@ -1,39 +1,7 @@
-/*
- * https://xiph.org/vorbis/doc/Vorbis_I_spec.html#x1-810005
- * https://wiki.xiph.org/VorbisComment
- */
 #include "tagspriv.h"
 
-void
-cbvorbiscomment(Tagctx *ctx, char *k, char *v){
-	if(*v == 0)
-		return;
-	if(cistrcmp(k, "album") == 0)
-		txtcb(ctx, Talbum, k, v);
-	else if(cistrcmp(k, "title") == 0)
-		txtcb(ctx, Ttitle, k, v);
-	else if(cistrcmp(k, "artist") == 0)
-		txtcb(ctx, Tartist, k, v);
-	else if(cistrcmp(k, "tracknumber") == 0)
-		txtcb(ctx, Ttrack, k, v);
-	else if(cistrcmp(k, "date") == 0)
-		txtcb(ctx, Tdate, k, v);
-	else if(cistrcmp(k, "replaygain_track_peak") == 0)
-		txtcb(ctx, Ttrackpeak, k, v);
-	else if(cistrcmp(k, "replaygain_track_gain") == 0)
-		txtcb(ctx, Ttrackgain, k, v);
-	else if(cistrcmp(k, "replaygain_album_peak") == 0)
-		txtcb(ctx, Talbumpeak, k, v);
-	else if(cistrcmp(k, "replaygain_album_gain") == 0)
-		txtcb(ctx, Talbumgain, k, v);
-	else if(cistrcmp(k, "genre") == 0)
-		txtcb(ctx, Tgenre, k, v);
-	else
-		txtcb(ctx, Tunknown, k, v);
-}
-
 int
-tagvorbis(Tagctx *ctx)
+tagopus(Tagctx *ctx)
 {
 	char *v;
 	uchar *d, h[4];
@@ -50,29 +18,27 @@ tagvorbis(Tagctx *ctx)
 
 		/* calculate the size of the packet */
 		nsegs = d[26];
-		if(ctx->read(ctx, d, nsegs+1) != nsegs+1)
+		if(ctx->read(ctx, d, nsegs+8) != nsegs+8)
 			return -1;
 		for(sz = i = 0; i < nsegs; sz += d[i++]);
 
-		if(d[nsegs] == 3) /* comment */
-			break;
-		if(d[nsegs] == 1 && sz >= 28){ /* identification */
-			if(ctx->read(ctx, d, 28) != 28)
+		if(memcmp(&d[nsegs], "OpusHead", 8) == 0){
+			if(ctx->read(ctx, d, 8) != 8 || d[0] != 1)
 				return -1;
-			sz -= 28;
-			ctx->channels = d[10];
-			ctx->samplerate = leuint(&d[11]);
-			if((ctx->bitrate = leuint(&d[15])) == 0) /* maximum */
-				ctx->bitrate = leuint(&d[19]); /* nominal */
+			sz -= 8;
+			ctx->channels = d[1];
+			ctx->samplerate = leuint(&d[4]);
+		}else if(memcmp(&d[nsegs], "OpusTags", 8) == 0){
+			break;
 		}
 
-		ctx->seek(ctx, sz-1, 1);
+		ctx->seek(ctx, sz-8, 1);
 	}
 
-	if(npages < 3) {
-		if(ctx->read(ctx, &d[1], 10) != 10 || memcmp(&d[1], "vorbis", 6) != 0)
+	if(npages < 3){
+		if(ctx->read(ctx, d, 4) != 4)
 			return -1;
-		sz = leuint(&d[7]);
+		sz = leuint(d);
 		if(ctx->seek(ctx, sz, 1) < 0 || ctx->read(ctx, h, 4) != 4)
 			return -1;
 		numtags = leuint(h);
@@ -112,7 +78,7 @@ tagvorbis(Tagctx *ctx)
 				v = (char *)memchr(v, 'O', ctx->buf+sz - v - 14);
 				if(v != nil && v[1] == 'g' && v[2] == 'g' && v[3] == 'S' && (v[5] & 4) == 4){ /* last page */
 					uvlong g = leuint(v+6) | (uvlong)leuint(v+10)<<32;
-					ctx->duration = g * 1000 / ctx->samplerate;
+					ctx->duration = g * 1000 / 48000; /* granule positions are always 48KHz */
 					return 0;
 				}
 				if(v != nil)

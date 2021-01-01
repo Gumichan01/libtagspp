@@ -115,7 +115,7 @@ Properties::Properties()
 /* Tag */
 
 // (Tag) Friend function
-void ctxtag( Tagctx * ctx, int t, const char * v, int offset, int size, Tagread )
+void ctxtag( Tagctx * ctx, int t, const char *k, const char * v, int offset, int size, Tagread )
 {
     Aux * aux = static_cast<Aux *>( ctx->aux );
 
@@ -169,7 +169,7 @@ bool Tag::readTag( const std::string& filename )
     const char * f = filename.c_str();
     char buf[256];
     Aux aux = { nullptr, *this };
-    Tagctx ctx = { nullptr, ctxread, ctxseek, ctxtag, &aux, buf, sizeof( buf ),
+    Tagctx ctx = { ctxread, ctxseek, ctxtag, nullptr, &aux, buf, sizeof( buf ),
                    0, 0, 0, 0, 0, 0, 0
                  };
 

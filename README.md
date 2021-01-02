@@ -3,7 +3,7 @@ libtags++
 
 [![Build Status](https://travis-ci.org/Gumichan01/libtagspp.svg?branch=master)](https://travis-ci.org/Gumichan01/libtagspp)
 
-A cross-platform library for reading tags, based on [libtags](https://github.com/ftrvxmtrx/libtags).
+A cross-platform library for reading tags, based on [libtags](https://git.sr.ht/~ft/libtags).
 
 Comparison to id3lib and taglib:
 
@@ -16,7 +16,6 @@ Comparison to id3lib and taglib:
 | opus           | yes             | no               | yes                         |
 | WAV            | yes             | no               | yes                         |
 | replay gain    | yes             | no               | ???                         |
-| size           | tiny (~40 KB)   | bloated?         | more bloated (~2 MB, v1.11) |
 | license        | MIT             | LGPL             | LGPL/MPL                    |
 | written in     | C++             | C++              | C++                         |
 | memory         | no allocations  | allocates memory | allocates memory            |

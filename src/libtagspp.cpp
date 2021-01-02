@@ -5,6 +5,8 @@
 #include <sstream>
 #include <cstdio>
 
+#define IGNORE(v) ((void) v)
+
 namespace
 {
 
@@ -126,6 +128,7 @@ Properties::Properties()
 // (Tag) Friend function
 void ctxtag( Tagctx * ctx, int t, const char * k, const char * v, int offset, int size, Tagread )
 {
+    IGNORE(k);
     Aux * aux = static_cast<Aux *>( ctx->aux );
 
     switch ( t )

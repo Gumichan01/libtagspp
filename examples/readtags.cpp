@@ -15,12 +15,11 @@ int main( int argc, char ** argv )
 
     for ( int i = 1; i < argc; i++ )
     {
-        cout << "*** " << argv[i] << endl;
-
         libtagpp::Tag tag;
         if ( tag.readTag( argv[i] ) )
         {
-            cout << "Title - " << tag.title() << endl
+            cout << "*** " << argv[i] << endl
+                 << "Title - " << tag.title() << endl
                  << "Artist - " << tag.artist() << endl
                  << "Album - " << tag.album() << endl
                  << "Year - " << tag.year() << endl
@@ -38,7 +37,7 @@ int main( int argc, char ** argv )
         else
         {
             cerr << "Cannot read the tag of the following file: " << endl
-                 << "--- " << argv[1] << endl;
+                 << "--- " << argv[1] << "--- " << endl;
             return -1;
         }
     }

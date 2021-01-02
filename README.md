@@ -13,6 +13,8 @@ Comparison to id3lib and taglib:
 | Ogg/Vorbis     | yes             | no               | yes                         |
 | FLAC           | yes             | no               | yes                         |
 | m4a            | yes             | no               | yes                         |
+| opus           | yes             | no               | yes                         |
+| WAV            | yes             | no               | yes                         |
 | replay gain    | yes             | no               | ???                         |
 | size           | tiny (~40 KB)   | bloated?         | more bloated (~2 MB, v1.11) |
 | license        | MIT             | LGPL             | LGPL/MPL                    |
@@ -26,13 +28,13 @@ Comparison to id3lib and taglib:
 
 
     libtagpp::Tag tag;
-    if(tag.readTag("Z-Bombs.mp3")
+    if(tag.readTag("data/gumichan01-eastern_wind.ogg")
     {
-        cout << "Title - " << tag.title() << endl                       // Z-Bombs.mp3
-             << "Artist - " << tag.artist() << endl                     // Comptroller
-             << "Album - " << tag.album() << endl                       // Baddies
+        cout << "Title - " << tag.title() << endl                       // Eastern Wind
+             << "Artist - " << tag.artist() << endl                     // Gumichan01
+             << "Album - " << tag.album() << endl                       // QD-A9
              << " ===============================" << endl
-             << "Duration - " << tag.properties().duration() << endl    // 2:29
+             << "Duration - " << tag.properties().duration() << endl    // 1:41
     }
     else
         cerr << "Cannot read the tag" << endl;

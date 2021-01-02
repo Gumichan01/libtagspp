@@ -175,8 +175,9 @@ Tag::Tag(): _title(), _artist(), _album(), _year(), _track(), _genre(),
 
 bool Tag::readTag( const std::string& filename )
 {
+    const int BUFSIZE = 1024;
     const char * f = filename.c_str();
-    char buf[256];
+    char buf[BUFSIZE];
     Aux aux = { nullptr, *this };
     Tagctx ctx = { ctxread, ctxseek, ctxtag, nullptr, &aux, buf, sizeof( buf ),
                    0, 0, 0, 0, 0, 0, 0

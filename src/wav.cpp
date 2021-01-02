@@ -5,7 +5,7 @@
 
 static struct
 {
-    char * s;
+    const char * s;
     int type;
 } t[N] =
 {
@@ -58,7 +58,7 @@ tagwav( Tagctx * ctx )
             break;
         sz -= 4 + 4;
         csz = leuint( d + 4 );
-        if ( sz < csz )
+        if ( sz < static_cast<uvlong>(csz) )
             break;
         sz -= csz;
 
@@ -84,7 +84,7 @@ tagwav( Tagctx * ctx )
             {
                 if ( memcmp( d, t[n].s, 4 ) == 0 )
                 {
-                    if ( ctx->read( ctx, d, csz ) != csz )
+                    if ( ctx->read( ctx, d, csz ) != static_cast<int>(csz) )
                         return -1;
                     d[csz - 1] = 0;
                     txtcb( ctx, t[n].type, "", d );
@@ -111,7 +111,7 @@ extractmdata( Tagctx * ctx, uchar * buffer )
     while ( ctx->read( ctx, buffer, FOUR_CC ) == FOUR_CC )
     {
         int n = 0;
-        u32int csz = 0;
+        int csz = 0;
         while ( n < N &&  csz == 0 )
         {
             if ( memcmp( buffer, t[n].s, FOUR_CC ) == 0 )

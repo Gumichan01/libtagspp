@@ -107,7 +107,7 @@ extractmdata( Tagctx * ctx, uchar * buffer )
     const u32int FOUR_CC = 4;
 
     memset( buffer, 0, ctx->bufsz );
-    while ( ctx->read( ctx, buffer, FOUR_CC ) == FOUR_CC )
+    while ( ctx->read( ctx, buffer, FOUR_CC ) == FOUR_CC && memcmp( buffer, "data", FOUR_CC ) != 0 )
     {
         int n = 0;
         int csz = 0;

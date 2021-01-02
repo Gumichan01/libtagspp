@@ -36,6 +36,22 @@
 					<Add option="-s" />
 				</Linker>
 			</Target>
+			<Target title="rtags">
+				<Option platforms="Windows;" />
+				<Option output="bin/Release/rtags" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option use_console_runner="0" />
+				<Compiler>
+					<Add option="-pedantic" />
+					<Add option="-Wextra" />
+					<Add option="-Wall" />
+				</Compiler>
+				<Linker>
+					<Add option="-O2" />
+				</Linker>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-std=c++17" />
@@ -44,6 +60,7 @@
 		</Compiler>
 		<Unit filename="examples/readtags.cpp">
 			<Option target="Debug" />
+			<Option target="rtags" />
 		</Unit>
 		<Unit filename="src/8859.cpp" />
 		<Unit filename="src/flac.cpp" />

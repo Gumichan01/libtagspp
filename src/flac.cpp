@@ -3,8 +3,7 @@
 
 #define beu3(d)   ((d)[0]<<16 | (d)[1]<<8  | (d)[2]<<0)
 
-int
-tagflac( Tagctx * ctx )
+int tagflac( Tagctx * ctx )
 {
     uchar * d;
     int sz, last;

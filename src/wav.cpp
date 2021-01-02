@@ -21,8 +21,7 @@ static struct
 
 int extractmdata( Tagctx * ctx, uchar * buffer );
 
-int
-tagwav( Tagctx * ctx )
+int tagwav( Tagctx * ctx )
 {
     uchar * d;
     int i, n, info;

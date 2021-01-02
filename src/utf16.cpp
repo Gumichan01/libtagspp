@@ -5,8 +5,7 @@
 
 static const uchar mark[] = {0x00, 0x00, 0xc0, 0xe0, 0xf0};
 
-int
-utf16to8( uchar * o, int osz, const uchar * s, int sz )
+int utf16to8( uchar * o, int osz, const uchar * s, int sz )
 {
     int i, be, c, c2, wr, j;
 

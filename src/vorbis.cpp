@@ -4,8 +4,7 @@
  */
 #include "tagspriv.h"
 
-void
-cbvorbiscomment( Tagctx * ctx, char * k, char * v )
+void cbvorbiscomment( Tagctx * ctx, char * k, char * v )
 {
     if ( *v == 0 )
         return;
@@ -33,8 +32,7 @@ cbvorbiscomment( Tagctx * ctx, char * k, char * v )
         txtcb( ctx, Tunknown, k, v );
 }
 
-int
-tagvorbis( Tagctx * ctx )
+int tagvorbis( Tagctx * ctx )
 {
     char * v;
     uchar * d, h[4];

@@ -4,8 +4,7 @@
 
 #define beuint16(d) (ushort)((d)[0]<<8 | (d)[1]<<0)
 
-int
-tagm4a( Tagctx * ctx )
+int tagm4a( Tagctx * ctx )
 {
     uvlong duration;
     uchar * d;

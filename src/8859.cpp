@@ -1,8 +1,7 @@
 /* http://en.wikipedia.org/wiki/ISO/IEC_8859-1 */
 #include "tagspriv.h"
 
-int
-iso88591toutf8( uchar * o, int osz, const uchar * s, int sz )
+int iso88591toutf8( uchar * o, int osz, const uchar * s, int sz )
 {
     int i;
 

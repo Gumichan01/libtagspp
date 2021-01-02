@@ -29,8 +29,7 @@ static const Getter g[] =
     {tagit, Fit},
 };
 
-void
-tagscallcb( Tagctx * ctx, int type, const char * k, const char * s, int offset, int size, Tagread f )
+void tagscallcb( Tagctx * ctx, int type, const char * k, const char * s, int offset, int size, Tagread f )
 {
     if ( type != Tunknown )
     {
@@ -40,8 +39,7 @@ tagscallcb( Tagctx * ctx, int type, const char * k, const char * s, int offset, 
     ctx->tag( ctx, type, k, s, offset, size, f );
 }
 
-int
-tagsget( Tagctx * ctx )
+int tagsget( Tagctx * ctx )
 {
     int i, res;
 

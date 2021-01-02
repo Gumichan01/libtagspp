@@ -1,7 +1,6 @@
 #include "tagspriv.h"
 
-int
-tagopus( Tagctx * ctx )
+int tagopus( Tagctx * ctx )
 {
     char * v;
     uchar * d, h[4];

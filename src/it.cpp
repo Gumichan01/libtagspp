@@ -1,7 +1,6 @@
 #include "tagspriv.h"
 
-int
-tagit( Tagctx * ctx )
+int tagit( Tagctx * ctx )
 {
     char d[4 + 26 + 1];
 

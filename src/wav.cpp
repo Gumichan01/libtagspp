@@ -83,7 +83,7 @@ int tagwav( Tagctx * ctx )
             {
                 if ( memcmp( d, t[n].s, 4 ) == 0 )
                 {
-                    if ( ctx->read( ctx, d, csz ) != static_cast<int>(csz) )
+                    if ( static_cast<u32int>( ctx->read( ctx, d, csz ) ) != csz )
                         return -1;
                     d[csz - 1] = 0;
                     txtcb( ctx, t[n].type, "", d );

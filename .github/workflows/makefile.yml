@@ -12,13 +12,13 @@ jobs:
 
     steps:
     - name: checkout
-    - uses: actions/checkout@v2
+      uses: actions/checkout@v2
 
     - name: compile
-    - run: make
+      run: make
       
     - name: rtags
-    - run: make rtags
+      run: make rtags
       
     - name: Run
-    - run: ./rtags data/gumichan01-eastern_wind.flac data/gumichan01-eastern_wind.m4a data/gumichan01-eastern_wind.mp3 data/gumichan01-eastern_wind.ogg data/gumichan01-eastern_wind.opus data/gumichan01-eastern_wind.wav
+      run: ./rtags data/gumichan01-eastern_wind.flac data/gumichan01-eastern_wind.m4a data/gumichan01-eastern_wind.mp3 data/gumichan01-eastern_wind.ogg data/gumichan01-eastern_wind.opus data/gumichan01-eastern_wind.wav

@@ -67,12 +67,12 @@ int tagflac( Tagctx * ctx )
 
             sz -= 4;
             vensz = leuint( d );
-            if ( vensz < 0 || vensz > sz - 8 )
+            if ( vensz < 0 || vensz > sz - 4 )
                 return -1;
             /* skip vendor, read the number of tags */
             if ( ctx->seek( ctx, vensz, 1 ) < 0 || ctx->read( ctx, d, 4 ) != 4 )
                 return -1;
-            sz -= 4;
+            sz -= vensz + 4;
             numtags = leuint( d );
 
             for ( i = 0; i < numtags && sz > 4; i++ )

@@ -9,7 +9,7 @@ int main( int argc, char ** argv )
 {
     if ( argc < 2 )
     {
-        cout << "usage: readtags FILE..." << endl;;
+        cout << "usage: rtags FILE..." << endl;;
         return -1;
     }
 

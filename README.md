@@ -1,7 +1,7 @@
 libtags++
 =======
 
-[![Build Status](https://travis-ci.org/Gumichan01/libtagspp.svg?branch=master)](https://travis-ci.org/Gumichan01/libtagspp)
+[![Makefile CI](https://github.com/Gumichan01/libtagspp/actions/workflows/makefile.yml/badge.svg?branch=master)](https://github.com/Gumichan01/libtagspp/actions/workflows/makefile.yml)
 
 A cross-platform library for reading tags, based on [libtags](https://git.sr.ht/~ft/libtags).
 

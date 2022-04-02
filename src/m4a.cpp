@@ -2,7 +2,13 @@
 /* https://developer.apple.com/library/mac/documentation/QuickTime/QTFF/QTFFChap2/qtff2.html */
 #include "tagspriv.h"
 
-#define beuint16(d) (ushort)((d)[0]<<8 | (d)[1]<<0)
+
+inline constexpr ushort beuint16( uchar * d )
+{
+    return static_cast<ushort>( d[0] << 8 | d[1] << 0 );
+}
+
+int tagm4a( Tagctx * ctx );
 
 int tagm4a( Tagctx * ctx )
 {

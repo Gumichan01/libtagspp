@@ -1,7 +1,11 @@
 #include "tagspriv.h"
 
-#define le16u(d) (u16int)((d)[0] | (d)[1]<<8)
-#define N 8
+inline constexpr u16int le16u( uchar * d )
+{
+    return static_cast<u16int>( d[0] | d[1] << 8 );
+}
+
+const int N = 8;
 
 static struct
 {
@@ -20,6 +24,8 @@ static struct
 };
 
 int extractmdata( Tagctx * ctx, uchar * buffer );
+
+int tagwav( Tagctx * ctx );
 
 int tagwav( Tagctx * ctx )
 {

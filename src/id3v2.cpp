@@ -11,7 +11,13 @@
  */
 #include "tagspriv.h"
 
-#define synchsafe(d) (uint)(((d)[0]&127)<<21 | ((d)[1]&127)<<14 | ((d)[2]&127)<<7 | ((d)[3]&127)<<0)
+
+inline constexpr uint synchsafe( uchar * d )
+{
+    return static_cast<uint>( ( d[0] & 127 ) << 21 | ( d[1] & 127 ) << 14 | ( d[2] & 127 ) << 7 | ( d[3] & 127 ) << 0 );
+}
+
+int tagid3v2( Tagctx * ctx );
 
 static int v2cb( Tagctx * ctx, char * k, char * v )
 {

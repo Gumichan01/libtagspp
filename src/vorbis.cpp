@@ -4,6 +4,8 @@
  */
 #include "tagspriv.h"
 
+int tagvorbis( Tagctx * ctx );
+
 void cbvorbiscomment( Tagctx * ctx, char * k, char * v )
 {
     if ( *v == 0 )

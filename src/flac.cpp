@@ -1,7 +1,12 @@
 /* https://xiph.org/flac/format.html */
 #include "tagspriv.h"
 
-#define beu3(d) ((d)[0]<<16 | (d)[1]<<8  | (d)[2]<<0)
+inline constexpr int beu3( uchar * d )
+{
+    return static_cast<int>( d[0] << 16 | d[1] << 8  | d[2] << 0 );
+}
+
+int tagflac( Tagctx * ctx );
 
 int tagflac( Tagctx * ctx )
 {

@@ -10,6 +10,8 @@ enum
     Outsz = 61,
 };
 
+int tagid3v1( Tagctx * ctx );
+
 int tagid3v1( Tagctx * ctx )
 {
     uchar * in, *out;

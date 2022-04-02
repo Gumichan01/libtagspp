@@ -7,6 +7,8 @@
 #define snprint std::snprintf
 #define nil nullptr
 
+// In Unix systems, you might want to use strcasecmp, but it is not a Standard C function
+// That is why I keep this implementation
 inline int cistrcmp( const char * s1, const char * s2 )
 {
     while ( *s1 != '\0' && ( std::toupper( *s1++ ) == toupper( *s2++ ) ) );
@@ -15,18 +17,12 @@ inline int cistrcmp( const char * s1, const char * s2 )
     return ( su1 < su2 ) ? -1 : ( su1 != su2 );
 }
 
-template <typename T>
-inline constexpr int leuint( T * d ) noexcept
-{
-    return static_cast<int>( d[3] << 24 | d[2] << 16 | d[1] <<  8 | d[0] <<  0 );
-}
-
-typedef unsigned char uchar;
+typedef uint8_t uchar;
 typedef unsigned short ushort;
 typedef unsigned int uint;
 typedef uint16_t u16int;
 typedef uint32_t u32int;
-typedef unsigned long long uvlong;
+typedef uint64_t uvlong;
 
 #include "tags.h"
 
@@ -35,8 +31,17 @@ enum
     Numgenre = 192,
 };
 
-#define beuint(d) (uint)(((uchar*)(d))[0]<<24 | ((uchar*)(d))[1]<<16 | ((uchar*)(d))[2]<<8 | ((uchar*)(d))[3]<<0)
-#define leuint(d) (uint)(((uchar*)(d))[3]<<24 | ((uchar*)(d))[2]<<16 | ((uchar*)(d))[1]<<8 | ((uchar*)(d))[0]<<0)
+template <typename T>
+inline constexpr uint beuint( T * d ) noexcept
+{
+    return static_cast<uint>( d[0] << 24 | d[1] << 16 | d[2] << 8 | d[3] << 0 );
+}
+
+template <typename T>
+inline constexpr uint leuint( T * d ) noexcept
+{
+    return static_cast<uint>( d[3] << 24 | d[2] << 16 | d[1] <<  8 | d[0] <<  0 );
+}
 
 extern const char * id3genres[Numgenre];
 
@@ -64,4 +69,8 @@ void cbvorbiscomment( Tagctx * ctx, char * k, char * v );
 
 void tagscallcb( Tagctx * ctx, int type, const char * k, const char * s, int offset, int size, Tagread f );
 
-#define txtcb(ctx, type, k, s) tagscallcb(ctx, type, k, (const char*)s, 0, 0, nil)
+template <typename T>
+inline void txtcb( Tagctx * ctx, int type, const char * k, T * s ) noexcept
+{
+    tagscallcb( ctx, type, k, reinterpret_cast<const char*>( s ), 0, 0, nil );
+}

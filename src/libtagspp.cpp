@@ -183,7 +183,7 @@ bool Tag::readTag( const std::string& filename )
     char buf[BUFSIZE];
     Aux aux = { nullptr, *this };
     Tagctx ctx = { ctxread, ctxseek, ctxtag, nullptr, &aux, buf, sizeof( buf ),
-                   0, 0, 0, 0, 0, 0, 0
+                   0, 0, 0, 0, 0, 0, 0, 0
                  };
 
     if ( ( aux.f = std::fopen( f, "rb" ) ) == nullptr )

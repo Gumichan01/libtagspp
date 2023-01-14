@@ -46,6 +46,7 @@ int tagsget( Tagctx * ctx )
     ctx->channels = ctx->samplerate = ctx->bitrate = ctx->duration = 0;
     ctx->found = 0;
     ctx->format = Funknown;
+    ctx->restart = 0;
     res = -1;
     for ( i = 0; i < ( int )( sizeof( g ) / sizeof( g[0] ) ); i++ )
     {
@@ -56,7 +57,7 @@ int tagsget( Tagctx * ctx )
                 res = 0;
             ctx->format = g[i].format;
         }
-        ctx->seek( ctx, 0, 0 );
+        ctx->seek( ctx, ctx->restart, 0 );
     }
 
     return res;

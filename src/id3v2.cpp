@@ -32,6 +32,8 @@ static int v2cb( Tagctx * ctx, char * k, char * v )
         txtcb( ctx, Tdate, k - 1, v );
     else if ( strcmp( k, "RK" ) == 0 || strcmp( k, "RCK" ) == 0 )
         txtcb( ctx, Ttrack, k - 1, v );
+    else if ( strcmp( k, "LEN" ) == 0 )
+        ctx->duration = atoi( v );
     else if ( strcmp( k, "CO" ) == 0 || strcmp( k, "CON" ) == 0 )
     {
         for ( ; v[0]; v++ )

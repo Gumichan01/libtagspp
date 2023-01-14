@@ -132,10 +132,13 @@ int tagvorbis( Tagctx * ctx )
                 {
                     uvlong g = leuint( v + 6 ) | ( uvlong )leuint( v + 10 ) << 32;
                     ctx->duration = g * 1000 / ctx->samplerate;
-                    return 0;
                 }
                 if ( v != nil )
                     v++;
+            }
+            if ( ctx->duration != 0 )
+            {
+                break;
             }
         }
     }
